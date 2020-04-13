@@ -1,0 +1,6 @@
+.idea/
+CIS/__pycache__
+CIS/*.pyc
+CIS/migrations/__pycache__
+PISproject/__pycache__
+PISproject/*.pyc

@@ -1,0 +1,16 @@
+{% extends "CIS/base.html" %}
+{% load static %}
+{% block content %}
+    <h1 class="text-center" style="margin-top: 2%"> Prihlásenie </h1>
+
+    <div class="login-page">
+      <div class="form">
+        <form>
+          <input type="text" placeholder="e-mail"name="email" required/>
+          <input type="password" placeholder="heslo" name="password" required/>
+          <button type="submit" class="button-dark">Prihlásiť sa</button>
+        </form>
+      </div>
+    </div>
+
+{% endblock content %}

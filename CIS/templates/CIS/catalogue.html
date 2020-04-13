@@ -1,0 +1,27 @@
+{% extends "CIS/base.html" %}
+{% load static %}
+{% block content %}
+    <div style="display: flex; justify-content: center; position: relative">
+        <h1 class="text-center" style="text-align: center; margin-top: 2%; margin-bottom: 3%"> Katalóg </h1>
+        <button class="button-light" style="margin-top: 2%; position: absolute; right: 0; " type="submit">Pokračovať</button>
+    </div>
+    <div class="row">
+        {% for product in products %}
+            <div class="col-md-4">
+                <div class="col-md-12 product-box">
+                    <h4>{{ product.name }}</h4>
+                    {% if product.breakable == True %}
+                    <p>Rýchlo kaziace: áno<br>Cena/ks: {{ product.price }}0 €<br>Hmotnosť/ks: {{ product.weight }}0 kg</p>
+                    {% else %}
+                    <p>Rýchlo kaziace: nie<br>Cena/ks: {{ product.price }}0 €<br>Hmotnosť/ks: {{ product.weight }}0 kg</p>
+                    {% endif %}
+                    <div class="center">
+                        <img style="width: 50%; height: auto; " src={% static product.image %}>
+                        <button class="button-dark-small" type="submit">Pridať do košíka</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock content %}
