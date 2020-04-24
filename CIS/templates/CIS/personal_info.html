@@ -1,22 +1,22 @@
 {% extends "CIS/base.html" %}
 {% load static %}
 {% block content %}
-    <h1 class="text-center" style="margin-top: 2%"> Osobné údaje </h1>
+  <h1 class="text-center" style="margin-top: 2%"> Osobné údaje </h1>
 
-    <div class="login-page">
-      <div class="form">
-        <form>
-          <input type="text" placeholder="meno"name="name" required/>
-          <input type="text" placeholder="priezvisko"name="surname" required/>
-          <input type="text" placeholder="telefón"name="phone" required/>
-          <input type="text" placeholder="e-mail"name="email" required/>
-          <input type="text" placeholder="ulica a číslo domu"name="street" required/>
-          <input type="text" placeholder="PSČ"name="psc" required/>
-          <input type="text" placeholder="mesto"name="city" required/>
-          <input type="text" placeholder="štát"name="country" required/>
-          <button type="submit" class="button-dark">Pokračovať</button>
-        </form>
-      </div>
+  <div class="login-page">
+    <div class="form">
+      <form>
+        <input type="text" placeholder="meno" name="name" required/>
+        <input type="text" placeholder="priezvisko" name="surname" required/>
+        <input type="text" placeholder="telefón" name="phone" required/>
+        <input type="email" placeholder="e-mail" name="email" required/>
+        <input type="text" placeholder="ulica, číslo domu (oddelené čiarkou)" name="street" required/>
+        <input type="text" placeholder="PSČ" name="psc" required/>
+        <input type="text" placeholder="mesto" name="city" required/>
+        <input type="text" placeholder="štát" name="country" required/>
+        <button type="submit" class="button-dark">Pokračovať</button>
+      </form>
     </div>
+  </div>
 
 {% endblock content %}

@@ -1,15 +1,15 @@
 {% extends "CIS/base.html" %}
 {% load static %}
 {% block content %}
-    <h1 class="text-center" style="margin-top: 2%"> Začnite nakupovať v našom obchode </h1>
-    <img class=home-image alt=Home-image src={% static "home-image.jpg" %} >
-    <div class="row justify-content-center" style="margin-top: 5%">
-        <form action="login" method="get">
-            <button class="button-dark" type="submit">Nakupovať s prihlásením</button>
-        </form>
-        <div style="width: 7%"></div>
-        <form action="catalogue" method="get">
-            <button class="button-light" type="submit">Nakupovať bez prihlásenia</button>
-        </form>
-    </div>
+  <h1 class="text-center" style="margin-top: 2%"> Začnite nakupovať v našom obchode </h1>
+  <img class=home-image alt=Home-image src={% static "home-image.jpg" %}>
+  <div class="row justify-content-center" style="margin-top: 5%">
+    <form action="login" method="get">
+      <button class="button-dark" type="submit">Nakupovať s prihlásením</button>
+    </form>
+    <div style="width: 7%"></div>
+    <form action="catalogue" method="get">
+      <button class="button-light" type="submit">Nakupovať bez prihlásenia</button>
+    </form>
+  </div>
 {% endblock content %}

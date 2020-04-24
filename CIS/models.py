@@ -7,21 +7,22 @@ class Address(models.Model):
     street = models.CharField(max_length=100)
     psc = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    Country = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
 
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
     phone = models.CharField(max_length=20)
-    email = models.CharField(max_length=100)
+    email = models.EmailField()
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    password = models.CharField(max_length=100)
 
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    price = models.FloatField()
-    weight = models.FloatField()
+    price = models.DecimalField(decimal_places=2, max_digits=10)
+    weight = models.DecimalField(decimal_places=2, max_digits=10)
     breakable = models.BooleanField()
     image = models.CharField(max_length=100)
 

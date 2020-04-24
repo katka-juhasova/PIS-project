@@ -1,14 +1,17 @@
 {% extends "CIS/base.html" %}
 {% block content %}
-    <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%"> Kuriér nebol nájdený </h1>
-    <h3 style="text-align: center; margin-bottom: 10%"> Je nám ľúto ale kuriér pre Vami vybraný čas nie je dostupný. Želáte si zmeniť čas/spôsob doručenia alebo zrušiť objednávku?</h3>
-    <div class="row justify-content-center" style="margin-top: 5%">
-        <button class="button-dark" type="submit">
-            <a href="#"> Zmeniť nastavenia doručenia </a>
-        </button>
-        <div style="width: 7%"></div>
-        <button class="button-light" type="submit">
-            <a href="{% url 'home' %}"> Zrušiť objednávku </a>
-        </button>
-    </div>
+  <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%"> Kuriér nebol nájdený </h1>
+  <h3 style="text-align: center; margin-bottom: 10%">
+    Je nám ľúto ale kuriér pre Vami vybraný čas nie je dostupný.
+    Želáte si zmeniť čas/spôsob doručenia alebo zrušiť objednávku?
+  </h3>
+  <div class="row justify-content-center" style="margin-top: 5%">
+    <button class="button-dark" type="submit">
+      <a href="#"> Zmeniť nastavenia doručenia </a>
+    </button>
+    <div style="width: 7%"></div>
+    <button class="button-light" type="submit">
+      <a href="{% url 'home' %}"> Zrušiť objednávku </a>
+    </button>
+  </div>
 {% endblock content %}

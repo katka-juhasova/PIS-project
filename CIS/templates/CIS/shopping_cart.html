@@ -1,29 +1,29 @@
 {% extends "CIS/base.html" %}
 {% load static %}
 {% block content %}
-    <h1 class="text-center" style="margin-top: 2%; margin-bottom: 3%"> Nákupný košík </h1>
+  <h1 class="text-center" style="margin-top: 2%; margin-bottom: 3%"> Nákupný košík </h1>
 
-    <div class="cart-container">
-        <h3>Produkty:</h3>
-        <table class="table">
-          <tbody>
-            <tr>
-              <td>xxx</td>
-              <td><span>xxx &euro;</span></td>
-              <td class="text-center"><span id="t1_pocet">0</span></td>
-              <td class="text-right">
-                <button class="btn" id="t1_minus" onclick="">-</button>
-                <button class="btn" id="t1_plus" onclick="">+</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <hr>
-        <b>Celková cena: <span id="amount"></span> xxx &euro;</b>
-        <hr>
-        <div class="text-right">
-          <button class="button-dark"> Pokračovať </button>
-        </div>
+  <div class="cart-container">
+    <h3>Produkty:</h3>
+    <table class="table">
+      <tbody>
+      <tr>
+        <td>xxx</td>
+        <td><span>xxx &euro;</span></td>
+        <td class="text-center"><span id="t1_pocet">0</span></td>
+        <td class="text-right">
+          <button class="btn" id="t1_minus" onclick="">-</button>
+          <button class="btn" id="t1_plus" onclick="">+</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <hr>
+    <b>Celková cena: <span id="amount"></span> xxx &euro;</b>
+    <hr>
+    <div class="text-right">
+      <button class="button-dark"> Pokračovať</button>
     </div>
+  </div>
 
 {% endblock content %}

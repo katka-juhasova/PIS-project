@@ -1,6 +1,7 @@
 import sqlite3
 import random
 from faker import Faker
+from CIS.sql_queries import SQLITE_INSERT_PRODUCT
 
 
 vegetables = {
@@ -64,10 +65,10 @@ vegetables = {
     'zemiaky': 'images/item57.png'
 }
 
-sqlite_insert_product = """
-    INSERT INTO CIS_product(name, price, weight, breakable, image) VALUES (?, ?, ?, ?, ?)
- """
-
+'''
+WARNING!!! Always put your new piece of code into main comment the previous 
+parts, we don't wanna have multiple rows with "ananas" in the db table
+'''
 
 if __name__ == '__main__':
     conn = sqlite3.connect('db.sqlite3')
@@ -79,6 +80,6 @@ if __name__ == '__main__':
         weight = round(random.uniform(0.50, 5.00), 1)
         breakable = random.choice((True, False))
         data = (vegetable.capitalize(), price, weight, breakable, image)
-        cursor.execute(sqlite_insert_product, data)
+        cursor.execute(SQLITE_INSERT_PRODUCT, data)
 
     conn.commit()
