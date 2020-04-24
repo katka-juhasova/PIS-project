@@ -12,7 +12,9 @@
   {% endif %}
   <div style="display: flex; justify-content: center; position: relative">
     <h1 class="text-center" style="text-align: center; margin-top: 2%; margin-bottom: 3%">Katalóg </h1>
-    <button class="button-light" style="margin-top: 2%; position: absolute; right: 0; " type="submit">Pokračovať</button>
+    <form action="/e-shop/shopping_cart/" method="get">
+      <button class="button-light" style="margin-top: 2%; position: absolute; right: 0; " type="submit">Pokračovať</button>
+    </form>
   </div>
   <div class="row">
     {% for product in products %}
@@ -31,10 +33,11 @@
           <div class="center">
             <img style="width: 50%; height: auto; "
                  src={% static product.image %}>
-            <button class="button-dark-small" type="submit"
-                    style="position: absolute; right: 30px; bottom: 30px;">
+            <form action="/e-shop/catalogue/" >
+            <button class="button-dark-small" type="submit" style="position: absolute; right: 30px; bottom: 30px;" value="{{ product.id }}">
               Pridať do košíka
             </button>
+            </form>
           </div>
         </div>
       </div>

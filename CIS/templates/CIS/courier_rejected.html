@@ -6,12 +6,13 @@
     Želáte si zmeniť čas/spôsob doručenia alebo zrušiť objednávku?
   </h3>
   <div class="row justify-content-center" style="margin-top: 5%">
-    <button class="button-dark" type="submit">
-      <a href="#"> Zmeniť nastavenia doručenia </a>
-    </button>
+    <form action="/e-shop/settings/" method="get">
+      <button class="button-dark" type="submit">Zmeniť nastavenia doručenia</button>
+    </form>
+
     <div style="width: 7%"></div>
-    <button class="button-light" type="submit">
-      <a href="{% url 'home' %}"> Zrušiť objednávku </a>
-    </button>
+    <form action="/e-shop/" method="get">
+      <button class="button-light" type="submit">Zrušiť objednávku</button>
+    </form>
   </div>
 {% endblock content %}

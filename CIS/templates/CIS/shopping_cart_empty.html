@@ -3,12 +3,13 @@
   <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%"> Nákupný košík </h1>
   <h3 style="text-align: center; margin-bottom: 10%"> Váš nákupný košík neobsahuje žiadne produkty. </h3>
   <div class="row justify-content-center" style="margin-top: 5%">
-    <button class="button-dark" type="submit">
-      <a href="{% url 'catalogue' %}"> Pokračovať v nákupe </a>
-    </button>
+    <form action="/e-shop/catalogue/" method="get">
+    <button class="button-dark" type="submit">Pokračovať v nákupe</button>
+    </form>
+
     <div style="width: 7%"></div>
-    <button class="button-light" type="submit">
-      <a href="{% url 'home' %}"> Späť na hlavnú stránku </a>
-    </button>
+    <form action="/e-shop/" method="get">
+      <button class="button-light" type="submit">Späť na hlavnú stránku</button>
+    </form>
   </div>
 {% endblock content %}

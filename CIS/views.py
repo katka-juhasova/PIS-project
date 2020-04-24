@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.shortcuts import render
 from .models import Product
-from .services import *
+from .services import Order, Customer
 from .forms import *
 from django.contrib import messages
 import CIS.models as models
@@ -20,14 +20,17 @@ def my_orders(request):
     return render(request, 'CIS/my_orders.html')
 
 
+# I know, it's totally disgusting view but I'm no expert in django
 def catalogue(request):
     global customer
+    global order
     customer = None
+    order = None
 
     # handle potential login from previous site
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
 
             db_customer = models.Customer.objects.filter(
                 email=request.POST['email'], password=request.POST['password'])
@@ -65,6 +68,10 @@ def catalogue(request):
             messages.add_message(request, messages.SUCCESS,
                                  'Boli ste úspešne prihlásený.')
 
+    # handle adding new product
+
+    # init new empty order
+    order = Order(customer)
     # load products to be shown in catalogue
     context = {
         'products': Product.objects.all()
@@ -90,6 +97,13 @@ def shopping_cart_empty(request):
 
 
 def shopping_cart(request):
+    # global order
+    #
+    # if order is None or order.total_amount == 0:
+    #     return render(request, 'CIS/shopping_cart_empty.html')
+    # else:
+    #     return render(request, 'CIS/shopping_cart.html')
+
     return render(request, 'CIS/shopping_cart.html')
 
 
@@ -99,4 +113,36 @@ def courier_rejected(request):
 
 def personal_info(request):
     return render(request, 'CIS/personal_info.html')
+
+
+def settings(request):
+    global customer
+    global order
+
+    # handle creating new customer
+    if request.method == 'POST':
+        personal_info_form = PersonalInfoForm(request.POST)
+        if personal_info_form.is_valid():
+            name = request.POST['name']
+            surname = request.POST['surname']
+            email = request.POST['email']
+            phone = request.POST['phone']
+            street = request.POST['street']
+            psc = request.POST['psc']
+            city = request.POST['city']
+            country = request.POST['country']
+
+            # add customer to the order details and move to next window
+            customer = Customer(name=name, surname=surname, phone=phone,
+                                email=email, street=street, psc=psc, city=city,
+                                country=country)
+            order.customer = customer
+
+            return render(request, 'CIS/delivery_settings.html')
+
+    # if the customer is not logged in just ask him to fill in the form
+    if customer is None:
+        return personal_info(request)
+
+    return render(request, 'CIS/delivery_settings.html')
 
