@@ -3,6 +3,39 @@
 <html lang="en">
 <head>
 
+  <script>
+    function plusCounter(id_num, price) {
+      if (typeof(Storage) !== "undefined") {
+        let current_amount = document.getElementById(id_num).textContent;
+        document.getElementById(id_num).innerHTML = Number(current_amount) + 1;
+        let element = document.getElementById("total_amount");
+        let total = element.textContent;
+        total = Number(total) + Number(price);
+        element.innerHTML = total.toFixed(2);
+      } else {
+        document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+      }
+    }
+
+    function minusCounter(id_num, price) {
+      if (typeof(Storage) !== "undefined") {
+        let current_amount = document.getElementById(id_num).textContent;
+        if (Number(current_amount) === 0) {
+          document.getElementById(id_num).innerHTML = current_amount;
+        } else {
+          document.getElementById(id_num).innerHTML = Number(current_amount) - 1;
+          let element = document.getElementById("total_amount");
+          let total = element.textContent;
+          total = Number(total) - Number(price);
+          element.innerHTML = total.toFixed(2);
+        }
+
+      } else {
+        document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+      }
+    }
+  </script>
+
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport"

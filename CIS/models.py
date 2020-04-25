@@ -6,8 +6,8 @@ from django.db import models
 class Address(models.Model):
     street = models.CharField(max_length=100)
     psc = models.CharField(max_length=100)
+    municipality = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
 
 
 class Customer(models.Model):

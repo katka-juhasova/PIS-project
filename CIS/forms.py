@@ -13,5 +13,5 @@ class PersonalInfoForm(forms.Form):
     email = forms.EmailField()
     street = forms.CharField(max_length=200)
     psc = forms.CharField(max_length=10)
+    municipality = forms.CharField(max_length=100)
     city = forms.CharField(max_length=100)
-    country = forms.CharField(max_length=100)
