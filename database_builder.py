@@ -1,7 +1,8 @@
 import sqlite3
 import random
-from faker import Faker
 from CIS.sql_queries import SQLITE_INSERT_PRODUCT
+from CIS.sql_queries import SQLITE_INSERT_PRODUCT_TO_STORE
+from CIS.sql_queries import SQLITE_INSERT_COURIER
 
 
 vegetables = {
@@ -74,12 +75,35 @@ if __name__ == '__main__':
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
 
-    for vegetable in vegetables:
-        image = vegetables[vegetable]
-        price = round(random.uniform(0.50, 5.00), 1)
-        weight = round(random.uniform(0.50, 5.00), 1)
-        breakable = random.choice((True, False))
-        data = (vegetable.capitalize(), price, weight, breakable, image)
-        cursor.execute(SQLITE_INSERT_PRODUCT, data)
+    # for vegetable in vegetables:
+    #     image = vegetables[vegetable]
+    #     price = round(random.uniform(0.50, 5.00), 1)
+    #     weight = round(random.uniform(0.50, 5.00), 1)
+    #     breakable = random.choice((True, False))
+    #     data = (vegetable.capitalize(), price, weight, breakable, image)
+    #     cursor.execute(SQLITE_INSERT_PRODUCT, data)
+    #
+    # conn.commit()
+
+    # for store_id in [1, 2, 3, 4, 5, 7, 9, 10]:
+    #     leave_out = list()
+    #     for _ in range(10):
+    #         leave_out.append(random.randint(1, 58))
+    #
+    #     for product_id in range(1, 59):
+    #         if product_id not in leave_out:
+    #             data = (50, product_id, store_id)
+    #             cursor.execute(SQLITE_INSERT_PRODUCT_TO_STORE, data)
+    #
+    # conn.commit()
+
+    couriers = ['Kurier Expres', 'Bolt Kuriér', 'GLS', 'GO4', 'Švihaj Kuriér',
+                'DPD', 'Kurier Diamond', 'REX', 'Der Kurier', 'LUCKER s.r.o.']
+
+    for i in range(10):
+        bicycle = random.choice([True, False])
+        automobile = random.choice([True, False]) if not bicycle else True
+        data = (couriers[i], automobile, bicycle)
+        cursor.execute(SQLITE_INSERT_COURIER, data)
 
     conn.commit()

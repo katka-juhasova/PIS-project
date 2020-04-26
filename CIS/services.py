@@ -4,6 +4,9 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 from decimal import *
+from typing import List
+import zeep
+import CIS.models as models
 
 
 class Address:
@@ -72,8 +75,20 @@ class Order:
         self.total_price += diff * self.products[product_id].price
         self.total_weight += diff * self.products[product_id].weight
 
-    def determine_vehicle(self) -> str:
-        if self.breakable or self.total_amount > 10 or self.total_weight > 20.:
-            return 'automobile'
 
-        return 'bicycle'
+# BP Výber prevádzky
+def choose_suitable_store(address: Address):
+    pass
+
+
+# BP Výber vozidla
+def choose_vehicle(order: Order) -> str:
+    if order.breakable or order.total_amount > 10 or order.total_weight > 20.:
+        return 'automobile'
+
+    return 'bicycle'
+
+
+# BP Objednanie kuriéra
+def order_courier(order: Order):
+    pass
