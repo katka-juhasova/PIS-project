@@ -15,7 +15,7 @@ class Customer(models.Model):
     surname = models.CharField(max_length=100)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    address_id = models.ForeignKey(Address, on_delete=models.CASCADE)
     password = models.CharField(max_length=100)
 
 
@@ -28,13 +28,13 @@ class Product(models.Model):
 
 
 class Store(models.Model):
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    address_id = models.ForeignKey(Address, on_delete=models.CASCADE)
 
 
 class ProductsInStore(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount = models.IntegerField()
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    store_id = models.ForeignKey(Store, on_delete=models.CASCADE)
 
 
 class Courier(models.Model):
@@ -44,12 +44,12 @@ class Courier(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    customer_id = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    store_id = models.ForeignKey(Store, on_delete=models.CASCADE)
     delivery_type = models.CharField(max_length=20)
     delivery_time_from = models.DateTimeField()
     delivery_time_to = models.DateTimeField()
-    courier = models.ForeignKey(Courier, on_delete=models.CASCADE)
+    courier_id = models.ForeignKey(Courier, on_delete=models.CASCADE)
     total_price = models.IntegerField()
     total_weight = models.IntegerField()
     total_amount = models.IntegerField()
@@ -58,19 +58,19 @@ class Order(models.Model):
 
 
 class ProductsInOrder(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     # alternative_for = models.ForeignKey(Product, on_delete=models.CASCADE)
     # nejde mat 2 foreign keys do tej istej table, povedzme, ze tu bude len id alternativy
     alternative_for = models.IntegerField()
     amount = models.IntegerField()
     available = models.BooleanField()
     status = models.CharField(default='nepripravený', max_length=20)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
 
 
 class Notification(models.Model):
     type = models.CharField(max_length=10)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer_id = models.ForeignKey(Customer, on_delete=models.CASCADE)
     text = models.CharField(max_length=1000)
 
 

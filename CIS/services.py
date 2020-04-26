@@ -50,7 +50,7 @@ class Order:
         getcontext().prec = 28
         self.customer = customer
         self.products = dict()
-        self.store = None
+        self.store_id = None
         self.delivery_type = None
         self.delivery_time_from = None
         self.delivery_time_to = None
@@ -92,3 +92,13 @@ def choose_vehicle(order: Order) -> str:
 # BP Objednanie kuriéra
 def order_courier(order: Order):
     pass
+
+
+if __name__ == '__main__':
+    municipalities_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/GeoServices/Municipalities?WSDL'
+    municipalities_client = zeep.Client(wsdl=municipalities_wsdl)
+    # print(municipalities_client.service.searchByName('Trnava'))
+
+    stores = models.Store.objects.all()
+    for store in stores:
+        print(store)
