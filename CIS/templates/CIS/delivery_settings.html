@@ -1,5 +1,53 @@
 {% extends "CIS/base.html" %}
+{% load static %}
 {% block content %}
-  <p> No proste delivery settings not done yet.
-    Len som potrebovala ten template nahodit. <p>
+<h1 class="text-center" style="margin-top: 2%"> Doprava </h1>
+
+<div class="login-page">
+  <div class="form">
+    <form action="/e-shop/delivery/" method="post"> {% csrf_token %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" onclick="displayDelivery()">
+        <label class="form-check-label" for="defaultCheck1">
+          Kuriér
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+        <label class="form-check-label" for="defaultCheck2">
+          Osobný odber
+        </label>
+      </div>
+
+      <div class="container" id="displayText" style="display:none">
+        <div class="dates" style="margin-top:30px;color:#2471a3;">
+          <label>Od:</label>
+          <input type="text" style="width:200px;background-color:#aed6f1;" class="form-control" id="usr1" name="event_date" placeholder="YYYY-MM-DD" autocomplete="off" >
+        </div>
+        <div class="dates" style="color:#2471a3;">
+          <label>Do:</label>
+          <input type="text" style="width:200px;background-color:#aed6f1;" class="form-control" id="usr2" name="event_date" placeholder="YYYY-MM-DD" autocomplete="off" >
+        </div>
+      </div>
+      <button type="submit" class="button-dark">Pokračovať</button>
+    </form>
+  </div>
+</div>
 {% endblock content %}
+{% block skripts %}
+<script>
+  $(function() {
+			$('.dates #usr1').datepicker({
+				'format': 'yyyy-mm-dd',
+				'autoclose': true
+			});
+		});
+
+    $(function() {
+			$('.dates #usr2').datepicker({
+				'format': 'yyyy-mm-dd',
+				'autoclose': true
+			});
+		});
+</script>
+{% endblock skripts %}
