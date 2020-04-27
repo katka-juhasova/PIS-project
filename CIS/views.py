@@ -281,7 +281,11 @@ def settings(request):
 
             return render(request, 'CIS/delivery_settings.html')
 
+    # if the customer is not logged in just ask him to fill in the form
+    if customer is None:
+        return personal_info(request)
 
+    return render(request, 'CIS/delivery_settings.html')
 
 
 def delivery(request):
