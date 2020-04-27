@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import render
-from .services import Order, Customer, Product
-from .services import Product
+from .services import Order, Customer, Store, Product
+from .services import choose_suitable_store
+from .services import order_courier
 from .forms import *
 from django.contrib import messages
 import CIS.models as models
@@ -250,6 +251,14 @@ def personal_info(request):
 def settings(request):
     global customer
     global order
+
+    if order.store_id is None:
+        store = choose_suitable_store(order)
+
+    '''
+    NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
+    products which needs to be replaced by alternatives
+    '''
 
     # handle creating new customer
     if request.method == 'POST':
