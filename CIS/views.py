@@ -141,7 +141,7 @@ def catalogue(request):
                 phone = db_customer[0].phone
                 email = db_customer[0].email
                 db_address = models.Address.objects.filter(
-                    id=db_customer[0].address_id)
+                    id=db_customer[0].address_id.id)
                 street = db_address[0].street
                 psc = db_address[0].psc
                 municipality = db_address[0].municipality
@@ -272,8 +272,8 @@ def settings(request):
 
             return render(request, 'CIS/delivery_settings.html')
 
-    # if the customer is not logged in just ask him to fill in the form
-    if customer is None:
-        return personal_info(request)
+    # if the customer is not logged in or nothing happened,just ask him to fill in the form
+    return personal_info(request)
 
-    return render(request, 'CIS/delivery_settings.html')
+def delivery(request):
+    return render(request, 'CIS/buy.html')

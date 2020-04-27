@@ -4,3 +4,5 @@ CIS/*.pyc
 CIS/migrations/__pycache__
 PISproject/__pycache__
 PISproject/*.pyc
+myenv/
+.vscode/
