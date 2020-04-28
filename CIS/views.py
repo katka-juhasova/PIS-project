@@ -8,6 +8,7 @@ from .forms import *
 from django.contrib import messages
 import CIS.models as models
 from django.http import HttpResponse
+import zeep
 
 customer = None
 order = None
@@ -83,6 +84,15 @@ def home(request):
                 messages.add_message(request, messages.SUCCESS,
                                      'Objednávka bola úspešne odoslaná.')
 
+                # send e-mail to the customer
+                email_text = ''
+                email_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/NotificationServices/Email?WSDL'
+                email_client = zeep.Client(wsdl=email_wsdl)
+                email_client.service.notify(
+                    '024', 'NXWZ2Q', customer.email,
+                    'Potvrdenie objednávky', email_text
+                )
+
     return render(request, 'CIS/home.html')
 
 
@@ -128,7 +138,14 @@ def catalogue(request):
     # handle potential login from previous site
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
-        if login_form.is_valid():
+
+        # validate email with WSDL
+        validator_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/Validator?WSDL'
+        validator_client = zeep.Client(wsdl=validator_wsdl)
+        success = validator_client.service.validateEmail(
+            request.POST['email'])
+
+        if login_form.is_valid() and success:
 
             db_customer = models.Customer.objects.filter(
                 email=request.POST['email'], password=request.POST['password'])
@@ -273,12 +290,12 @@ def settings(request):
                 store = choose_suitable_store(order)
 
             '''
-            NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
-            products which needs to be replaced by alternatives
+            NOTE FOR DAVID: store.missing_products id list containing id 
+            of unavailable products which needs to be replaced by alternatives
+            this is the case when the customer is not logged it
             '''
 
             return render(request, 'CIS/delivery_settings.html')
-
 
     # if the customer is not logged in just ask him to fill in the form
     if customer is None:
@@ -290,10 +307,11 @@ def settings(request):
     '''
     NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
     products which needs to be replaced by alternatives
+    this is the case when customer is logged in
     '''
 
     return render(request, 'CIS/delivery_settings.html')
 
 
 def delivery(request):
-    return render(request, 'CIS/buy.html')
+    return render(request, 'CIS/order_details.html')

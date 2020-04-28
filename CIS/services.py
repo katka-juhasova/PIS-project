@@ -255,6 +255,10 @@ def order_courier(order: Order):
                     return
 
 
+def generate_email_text(order: Order):
+    return 'TODO :)'
+
+
 # this main is just for testing the functionality of the functions
 if __name__ == '__main__':
     o = Order(Customer(municipality='Ružinov', city='Bratislava'))
