@@ -124,8 +124,6 @@ def add_from_catalogue(request):
 def catalogue(request):
     global customer
     global order
-    customer = None
-    order = None
 
     # handle potential login from previous site
     if request.method == 'POST':
@@ -252,16 +250,8 @@ def settings(request):
     global customer
     global order
 
-    if order.store_id is None:
-        store = choose_suitable_store(order)
-
-    '''
-    NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
-    products which needs to be replaced by alternatives
-    '''
-
     # handle creating new customer
-    if request.method == 'POST':
+    if request.method == 'POST' and customer is None:
         personal_info_form = PersonalInfoForm(request.POST)
         if personal_info_form.is_valid():
             name = request.POST['name']
@@ -279,11 +269,28 @@ def settings(request):
                                 municipality=municipality, city=city)
             order.customer = customer
 
+            if order.store_id is None:
+                store = choose_suitable_store(order)
+
+            '''
+            NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
+            products which needs to be replaced by alternatives
+            '''
+
             return render(request, 'CIS/delivery_settings.html')
+
 
     # if the customer is not logged in just ask him to fill in the form
     if customer is None:
         return personal_info(request)
+
+    if order.store_id is None:
+        store = choose_suitable_store(order)
+
+    '''
+    NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
+    products which needs to be replaced by alternatives
+    '''
 
     return render(request, 'CIS/delivery_settings.html')
 
