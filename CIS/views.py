@@ -314,4 +314,16 @@ def settings(request):
 
 
 def delivery(request):
-    return render(request, 'CIS/order_details.html')
+    ## Check if between delivery times, there is a weekend
+    calendar_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL'
+    calendar_client = zeep.Client(wsdl=calendar_wsdl)
+
+    check_delivery_time_from = calendar_client.service.isWeekend(request.POST['casOd'].split(' ')[0])
+    check_delivery_time_to = calendar_client.service.isWeekend(request.POST['casDo'].split(' ')[0])
+   
+    if check_delivery_time_from or check_delivery_time_to:
+        messages.add_message(request, messages.ERROR,
+                                     'Kuriér počas víkendu nepracuje, zvoľ iný interval !')
+        return render(request, 'CIS/delivery_settings.html')
+    else:
+        return render(request, 'CIS/order_details.html')
