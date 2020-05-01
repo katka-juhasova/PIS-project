@@ -42,7 +42,7 @@ class Customer:
 class Product:
     def __init__(self, id_num: int, name: str, price: float, weight: float,
                  breakable: bool, amount: int, alternative_for: int or None,
-                 available: bool, status: str):
+                 available: bool, status: str, image: str):
         self.id_num = id_num
         self.name = name
         self.price = price
@@ -52,6 +52,7 @@ class Product:
         self.alternative_for = alternative_for
         self.available = available
         self.status = status
+        self.image = image
 
 
 class Order:
@@ -253,6 +254,18 @@ def order_courier(order: Order):
                 if success:
                     order.courier_id = courier.id_num
                     return
+
+def checkOrderWeekendTime(deliveryFrom: str, deliveryTo: str):
+    calendar_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL'
+    calendar_client = zeep.Client(wsdl=calendar_wsdl)
+
+    check_delivery_time_from = calendar_client.service.isWeekend(deliveryFrom.split(' ')[0])
+    check_delivery_time_to = calendar_client.service.isWeekend(deliveryTo.split(' ')[0])
+    
+    if check_delivery_time_from or check_delivery_time_to:
+        return True
+    else:
+        return False
 
 
 def generate_email_text(order: Order):

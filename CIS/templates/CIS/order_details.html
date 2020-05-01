@@ -1,8 +1,57 @@
 {% extends "CIS/base.html" %}
+{% load static %}
 {% block content %}
-  <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%"> Detaily objednávky </h1>
-  <p> To sa ešte spraví. Nech je najrpv všetko predtým pekne done. <p>
-  <form action="/e-shop/" method="post"> {% csrf_token %}
-    <button class="button-dark" style="margin-top: 2%; position: absolute; right: 0; " name="save order" type="submit">Pokračovať</button>
-  </form>
+  <div class="card shopping-cart">
+    <div class="card-header bg-dark text-light">
+        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+        Sumarizácia
+        <div class="clearfix"></div>
+    </div>
+    <div class="card-body">
+      <!-- PRODUCT -->
+      {% for key, value in products %}
+      <div class="row">
+          <div class="col-12 col-sm-12 col-md-2 text-center">
+                  <img class="img-responsive" src={% static value.image %} alt="prewiew" width="120" height="80">
+          </div>
+          <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
+              <h4 class="product-name"><strong>{{ value.name }}</strong></h4>
+              <h4>
+                  <small>Hmotnosť/ks: {{ value.weight|floatformat:2 }}kg</small>
+              </h4>
+              <h4>
+                {% if value.breakable %}
+                  <small>Rozbitné: áno</small>
+                {% else %}
+                  <small>Rozbitné: nie</small>
+                {% endif %}
+              </h4>
+          </div>
+          <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
+              <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
+                  <h6><strong>{{ value.price|floatformat:2 }}<span class="text-muted">€</span></strong></h6>
+              </div>
+          </div>
+      </div>
+      <hr>
+      {% endfor %}
+      <!-- END PRODUCT -->   
+    </div>
+    <div class="card-footer">
+      <div class="row d-flex justify-content-between">
+        {% if order.delivery_type == 'curier' %}
+        <div class="col-sm-3"> 
+             <p>Kurier : {{ courier.name}}</p>
+             <p>Prevádzka : {{ store.address.city }}, {{ store.address.street }} </p>
+        </div>
+        {% endif %}
+        <div class="col-sm-3">
+          <form action="/e-shop/" method="post"> {% csrf_token %}
+            <button class="button-dark" name="save order" type="submit">Objednať</button>
+          </form>
+            Celkovo: <b>{{ order.total_price}}€</b>
+        </div>
+      </div>
+    </div>
+</div>
 {% endblock content %}

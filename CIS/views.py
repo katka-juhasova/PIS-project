@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import render
-from .services import Order, Customer, Store, Product
+from .services import Order, Customer, Store, Product, Courier
 from .services import choose_suitable_store
 from .services import order_courier
+from .services import checkOrderWeekendTime
 from .forms import *
 from django.contrib import messages
 import CIS.models as models
@@ -13,10 +14,10 @@ import zeep
 customer = None
 order = None
 
-
 def home(request):
     global order
     global customer
+
     # if the customer is getting here after hitting button in order details
     # save the order to db
     # if request.method == 'POST':
@@ -92,7 +93,7 @@ def home(request):
                     '024', 'NXWZ2Q', customer.email,
                     'Potvrdenie objednávky', email_text
                 )
-
+    
     return render(request, 'CIS/home.html')
 
 
@@ -102,7 +103,7 @@ def my_orders(request):
 
 def add_from_catalogue(request):
     global order
-
+   
     if request.method == 'POST':
         product_id = None
         for key, value in request.POST.items():
@@ -115,6 +116,7 @@ def add_from_catalogue(request):
         price = db_product[0].price
         weight = db_product[0].weight
         breakable = db_product[0].breakable
+        image = db_product[0].image
         amount = 1
         alternative_for = None
         available = True
@@ -122,10 +124,10 @@ def add_from_catalogue(request):
 
         product = Product(id_num=id_num, name=name, price=price, weight=weight,
                           breakable=breakable, amount=amount, status=status,
-                          alternative_for=alternative_for, available=available)
+                          alternative_for=alternative_for, available=available, image=image)
 
         order.add_product(product)
-
+        
     # just return no content status since no new view needs to be rendered
     return HttpResponse(status=204)
 
@@ -187,11 +189,12 @@ def catalogue(request):
 
     # init new empty order
     order = Order(customer)
+
     # load products to be shown in catalogue
     context = {
-        'products': models.Product.objects.all()
+        'products': models.Product.objects.all(),
     }
-
+    
     return render(request, 'CIS/catalogue.html', context)
 
 
@@ -314,16 +317,40 @@ def settings(request):
 
 
 def delivery(request):
-    ## Check if between delivery times, there is a weekend
-    calendar_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL'
-    calendar_client = zeep.Client(wsdl=calendar_wsdl)
+    global order
 
-    check_delivery_time_from = calendar_client.service.isWeekend(request.POST['casOd'].split(' ')[0])
-    check_delivery_time_to = calendar_client.service.isWeekend(request.POST['casDo'].split(' ')[0])
-   
-    if check_delivery_time_from or check_delivery_time_to:
-        messages.add_message(request, messages.ERROR,
-                                     'Kuriér počas víkendu nepracuje, zvoľ iný interval !')
-        return render(request, 'CIS/delivery_settings.html')
+    if "curier" in request.POST:
+        checkWeekend = checkOrderWeekendTime(request.POST['casOd'], request.POST['casDo'])
+        if checkWeekend:
+            messages.add_message(request, messages.ERROR,
+                                        'Kuriér počas víkendu nepracuje, zvoľ iný interval !')
+            return render(request, 'CIS/delivery_settings.html')
+        else:
+            order.delivery_type = 'curier'
+            order.delivery_time_from = request.POST['casOd']
+            order.delivery_time_to = request.POST['casDo']
+            order_courier(order)
+
+            if order.courier_id:
+                courier = models.Courier.objects.get(id=order.courier_id)
+                store = models.Store.objects.get(id=order.store_id)
+                print(store.address.city)
+                context = {
+                    'products': order.products.items(),
+                    'order' : order,
+                    'store' : store,
+                    'courier': courier
+                }
+                return render(request, 'CIS/order_details.html', context)
+            else:
+                messages.add_message(request, messages.ERROR,
+                                        'Kuriéra sa nepodarilo zohnať, skús znova!')
+            return render(request, 'CIS/delivery_settings.html')
     else:
-        return render(request, 'CIS/order_details.html')
+        ## DOROBIT VYBRATIE PREVADZKY AJ KED SI NEOBJEDNAM KURIERA
+        order.delivery_type = 'personal collection'
+        context = {
+                'products': order.products.items(),
+                'order' : order
+            }
+        return render(request, 'CIS/order_details.html', context)
