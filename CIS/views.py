@@ -291,6 +291,9 @@ def settings(request):
 
             if order.store_id is None:
                 store = choose_suitable_store(order)
+                messages.add_message(request, messages.SUCCESS,
+                                        'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
+
 
             '''
             NOTE FOR DAVID: store.missing_products id list containing id 
@@ -306,6 +309,8 @@ def settings(request):
 
     if order.store_id is None:
         store = choose_suitable_store(order)
+        messages.add_message(request, messages.SUCCESS,
+                                        'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
 
     '''
     NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
