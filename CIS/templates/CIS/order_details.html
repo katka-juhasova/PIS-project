@@ -1,23 +1,25 @@
 {% extends "CIS/base.html" %}
 {% load static %}
 {% block content %}
+<h1 class="text-center" style="margin-top: 2%"> Sumarizácia </h1>
   <div class="card shopping-cart">
     <div class="card-header bg-dark text-light">
-        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-        Sumarizácia
-        <div class="clearfix"></div>
     </div>
     <div class="card-body">
       <!-- PRODUCT -->
       {% for key, value in products %}
+      <hr>
       <div class="row">
           <div class="col-12 col-sm-12 col-md-2 text-center">
-                  <img class="img-responsive" src={% static value.image %} alt="prewiew" width="120" height="80">
+            <img class="img-responsive" src={% static value.image %} alt="prewiew" width="120" height="80">
           </div>
           <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
               <h4 class="product-name"><strong>{{ value.name }}</strong></h4>
               <h4>
-                  <small>Hmotnosť/ks: {{ value.weight|floatformat:2 }}kg</small>
+                <small>Hmotnosť/ks: {{ value.weight|floatformat:2 }}kg</small>
+              </h4>
+              <h4>
+                <small>Počet kusov: {{ value.amount }}</small>
               </h4>
               <h4>
                 {% if value.breakable %}
@@ -29,27 +31,36 @@
           </div>
           <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
               <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
-                  <h6><strong>{{ value.price|floatformat:2 }}<span class="text-muted">€</span></strong></h6>
+                <h6><strong>Cena za kus: {{ value.price|floatformat:2 }}<span class="text-muted">€</span></strong></h6>
+                {% for product_key, product_value in productTypePrice %}
+                  {% if product_key == key %}
+                    <h5><strong>Cena: {{ product_value }}<span class="text-muted">€</span></strong></h5>
+                  {% endif %}
+                {% endfor %}
               </div>
           </div>
       </div>
-      <hr>
       {% endfor %}
       <!-- END PRODUCT -->   
     </div>
     <div class="card-footer">
       <div class="row d-flex justify-content-between">
         {% if order.delivery_type == 'curier' %}
-        <div class="col-sm-3"> 
-             <p>Kurier : {{ courier.name}}</p>
-             <p>Prevádzka : {{ store.address.city }}, {{ store.address.street }} </p>
-        </div>
+          <div class="col-sm-6"> 
+            <h4 class="product-name"><strong>Kuriér: </strong>{{ courier.name }}</h4>
+            <h4 class="product-name"><strong>Prevádzka: </strong>{{ store.address.city }}, {{ store.address.street }}</h4>
+          </div>
+        {% elif order.delivery_type == 'personal collection'%}
+          <div class="col-sm-6"> 
+            <h4 class="product-name"><strong>Osobný odber</strong></h4>
+            <h4 class="product-name"><strong>Prevádzka: </strong>{{ store.address.city }}, {{ store.address.street }}</h4>
+          </div>
         {% endif %}
-        <div class="col-sm-3">
+        <div class="col-sm-3 justify-content-right">
+          <h4 class="product-name"><strong>Celkovo: </strong>{{ order.total_price}}€</h4>
           <form action="/e-shop/" method="post"> {% csrf_token %}
-            <button class="button-dark" name="save order" type="submit">Objednať</button>
-          </form>
-            Celkovo: <b>{{ order.total_price}}€</b>
+            <button class="button-dark" style="margin-top: 5px;" name="save order" type="submit">Objednať</button>
+          </form>            
         </div>
       </div>
     </div>

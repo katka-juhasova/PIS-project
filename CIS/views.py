@@ -328,8 +328,8 @@ def delivery(request):
         checkWeekend = checkOrderWeekendTime(request.POST['casOd'], request.POST['casDo'])
         if checkWeekend:
             messages.add_message(request, messages.ERROR,
-                                        'Kuriér počas víkendu nepracuje, zvoľ iný interval !')
-            return render(request, 'CIS/delivery_settings.html')
+                                        'Kuriér počas víkendu nepracuje')
+            return render(request, 'CIS/courier_rejected.html')
         else:
             order.delivery_type = 'curier'
             order.delivery_time_from = request.POST['casOd']
@@ -339,9 +339,12 @@ def delivery(request):
             if order.courier_id:
                 courier = models.Courier.objects.get(id=order.courier_id)
                 store = models.Store.objects.get(id=order.store_id)
-                print(store.address.city)
+                totalPriceForProductType = dict()
+                for key, value in order.products.items():
+                    totalPriceForProductType[key] = value.amount*value.price
                 context = {
                     'products': order.products.items(),
+                    'productTypePrice': totalPriceForProductType.items(),
                     'order' : order,
                     'store' : store,
                     'courier': courier
@@ -349,13 +352,18 @@ def delivery(request):
                 return render(request, 'CIS/order_details.html', context)
             else:
                 messages.add_message(request, messages.ERROR,
-                                        'Kuriéra sa nepodarilo zohnať, skús znova!')
-            return render(request, 'CIS/delivery_settings.html')
+                                        'Nepodarilo sa nájsť vhodného kuriéra')
+                return render(request, 'CIS/courier_rejected.html')
     else:
-        ## DOROBIT VYBRATIE PREVADZKY AJ KED SI NEOBJEDNAM KURIERA
+        store = models.Store.objects.get(id=order.store_id)
+        totalPriceForProductType = dict()
+        for key, value in order.products.items():
+            totalPriceForProductType[key] = value.amount*value.price
         order.delivery_type = 'personal collection'
         context = {
                 'products': order.products.items(),
-                'order' : order
+                'productTypePrice': totalPriceForProductType.items(),
+                'order' : order,
+                'store' : store,
             }
         return render(request, 'CIS/order_details.html', context)

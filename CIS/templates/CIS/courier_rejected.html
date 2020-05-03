@@ -2,7 +2,12 @@
 {% block content %}
   <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%"> Kuriér nebol nájdený </h1>
   <h3 style="text-align: center; margin-bottom: 10%">
-    Je nám ľúto ale kuriér pre Vami vybraný čas nie je dostupný.
+    {% if messages %}
+        {% for message in messages %}
+            <strong>Dôvod: </strong>{{ message }}.
+        {% endfor %}
+    {% endif %}
+    <br>
     Želáte si zmeniť čas/spôsob doručenia alebo zrušiť objednávku?
   </h3>
   <div class="row justify-content-center" style="margin-top: 5%">
