@@ -2,9 +2,9 @@
 {% load static %}
 {% block content %}
 <h1 class="text-center" style="margin-top: 2%"> Sumarizácia </h1>
-  <div class="card shopping-cart">
-    <div class="card-header bg-dark text-light">
-    </div>
+<div class="card shopping-cart">
+  <form action="/e-shop/" method="post"> {% csrf_token %}
+    <div class="card-header bg-dark text-light"></div>
     <div class="card-body">
       <!-- PRODUCT -->
       {% for key, value in products %}
@@ -48,6 +48,7 @@
         {% if order.delivery_type == 'curier' %}
           <div class="col-sm-6"> 
             <h4 class="product-name"><strong>Kuriér: </strong>{{ courier.name }}</h4>
+            <h6 class="product-name" style="padding-left: 15px;"><strong>Zvolený čas doručenia od </strong>{{ order.delivery_time_from }}<strong>, do </strong>{{ order.delivery_time_to }}</h6>
             <h4 class="product-name"><strong>Prevádzka: </strong>{{ store.address.city }}, {{ store.address.street }}</h4>
           </div>
         {% elif order.delivery_type == 'personal collection'%}
@@ -58,11 +59,10 @@
         {% endif %}
         <div class="col-sm-3 justify-content-right">
           <h4 class="product-name"><strong>Celkovo: </strong>{{ order.total_price}}€</h4>
-          <form action="/e-shop/" method="post"> {% csrf_token %}
-            <button class="button-dark" style="margin-top: 5px;" name="save order" type="submit">Objednať</button>
-          </form>            
+          <button class="button-dark" style="margin-top: 5px;" name="save order" type="submit">Objednať</button>
         </div>
       </div>
     </div>
+  </form>  
 </div>
 {% endblock content %}

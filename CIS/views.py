@@ -5,6 +5,7 @@ from .services import Order, Customer, Store, Product, Courier
 from .services import choose_suitable_store
 from .services import order_courier
 from .services import checkOrderWeekendTime
+from .services import generate_email_text
 from .forms import *
 from django.contrib import messages
 import CIS.models as models
@@ -86,14 +87,14 @@ def home(request):
                                      'Objednávka bola úspešne odoslaná.')
 
                 # send e-mail to the customer
-                email_text = ''
+                email_text = generate_email_text(order)
                 email_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/NotificationServices/Email?WSDL'
                 email_client = zeep.Client(wsdl=email_wsdl)
                 email_client.service.notify(
                     '024', 'NXWZ2Q', customer.email,
                     'Potvrdenie objednávky', email_text
                 )
-    
+                print(email_text)
     return render(request, 'CIS/home.html')
 
 

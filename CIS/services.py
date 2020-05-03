@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from decimal import *
 import zeep
 import sqlite3
+import CIS.models as models
 from CIS.sql_queries import SQLITE_SELECT_MUNICIPALITY
 from CIS.sql_queries import SQLITE_SELECT_CITY
 from CIS.sql_queries import SQLITE_SELECT_ALL_STORES
@@ -269,7 +270,18 @@ def checkOrderWeekendTime(deliveryFrom: str, deliveryTo: str):
 
 
 def generate_email_text(order: Order):
-    return 'TODO :)'
+    message = 'Vážený zákazník ' + order.customer.name + ', Vaša objednávka bola spracovaná.\n Obsah objednávky: '
+    for key, value in order.products.items():
+        message += value.name + ', '
+    message += 'celková cena: ' + str(order.total_price) + '€. '
+    store = models.Store.objects.get(id=order.store_id)
+    if order.delivery_type == 'curier':
+        courier = models.Courier.objects.get(id=order.courier_id)                
+        message += 'Spôsob doručenia: Kuriér ,' + courier.name + '.\nZvolený čas doručenia: ' + order.delivery_time_from + ' - ' + order.delivery_time_to + '.\nPrevádzka: ' + store.address.city + ', ' + store.address.street + '.'
+    elif order.delivery_type == 'personal collection':
+        message += 'Spôsob doručenia: Osobný odber.\n Prevádzka: ' + store.address.city + ', ' + store.address.street + '.'
+    message += ' Ďakujeme za Vašu objednávku.'
+    return message
 
 
 # this main is just for testing the functionality of the functions
