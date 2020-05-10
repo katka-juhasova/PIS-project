@@ -3,18 +3,27 @@
 {% block content %}
 <h1 class="text-center" style="margin-top: 2%"> Sumarizácia </h1>
 <div class="card shopping-cart">
-  <form action="/e-shop/" method="post"> {% csrf_token %}
+
     <div class="card-header bg-dark text-light"></div>
     <div class="card-body">
       <!-- PRODUCT -->
       {% for key, value in products %}
-      <hr>
+      {% if value.status == 'odstranenie' %}
+      <hr style="display: none">
+      <div class="row" style="display: none">
+      {% else %}
+                <hr>
       <div class="row">
+      {% endif %}
           <div class="col-12 col-sm-12 col-md-2 text-center">
             <img class="img-responsive" src={% static value.image %} alt="prewiew" width="120" height="80">
           </div>
           <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
-              <h4 class="product-name"><strong>{{ value.name }}</strong></h4>
+              {% if value.alternative_for == None %}
+                 <h4 class="product-name"><strong>{{ value.name }}</strong></h4>
+              {% else %}
+                 <h4 class="product-name"><strong>{{ value.name }} (Alternatíva)</strong></h4>
+              {% endif %}
               <h4>
                 <small>Hmotnosť/ks: {{ value.weight|floatformat:2 }}kg</small>
               </h4>
@@ -35,6 +44,11 @@
                 {% for product_key, product_value in productTypePrice %}
                   {% if product_key == key %}
                     <h5><strong>Cena: {{ product_value }}<span class="text-muted">€</span></strong></h5>
+                    {% if value.alternative_for != None %}
+                    <form action="/e-shop/delete_product/" method="post" style="display: inline-block"> {% csrf_token %}
+                      <button class="btn" type="submit" name="{{ value.id_num }}" style="color: darkred" >X</button>
+                    </form>
+                    {% endif %}
                   {% endif %}
                 {% endfor %}
               </div>
@@ -59,10 +73,12 @@
         {% endif %}
         <div class="col-sm-3 justify-content-right">
           <h4 class="product-name"><strong>Celkovo: </strong>{{ order.total_price}}€</h4>
-          <button class="button-dark" style="margin-top: 5px;" name="save order" type="submit">Objednať</button>
+            <form action="/e-shop/" method="post"> {% csrf_token %}
+              <button class="button-dark" style="margin-top: 5px;" name="save order" type="submit">Objednať</button>
+            </form>
         </div>
       </div>
     </div>
-  </form>  
+
 </div>
 {% endblock content %}
