@@ -34,6 +34,7 @@ def home(request):
                 elif order.delivery_type == 'personal collection':
                     new_order.delivery_time_to = "2000-01-01 10:00"
                     new_order.delivery_time_from = "2000-01-01 10:00"
+                new_order.courier = order.courier_id
                 new_order.total_price = order.total_price
                 new_order.total_weight = order.total_weight
                 new_order.total_amount = order.total_amount
