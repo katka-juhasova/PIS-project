@@ -260,6 +260,7 @@ def order_courier(order: Order):
                     order.courier_id = courier.id_num
                     return
 
+
 def checkOrderWeekendTime(deliveryFrom: str, deliveryTo: str):
     calendar_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL'
     calendar_client = zeep.Client(wsdl=calendar_wsdl)
@@ -291,11 +292,11 @@ def generate_email_text(order: Order):
 def replace_products(store, product, amount):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
-    cursor.execute(SQLITE_MISSING, (store, product))
+    cursor.execute(SQLITE_MISSING, (store, product,))
     store_amount = cursor.fetchall()
     if store_amount[0][0] >= amount:
         return None, None, None
-    cursor.execute(SQLITE_ALTERNATIVE, product)
+    cursor.execute(SQLITE_ALTERNATIVE, (product,))
     alternative = cursor.fetchall()
     cursor.execute(SQLITE_MISSING, (store, str(alternative[0][0])))
     alternative_amount = cursor.fetchall()
@@ -312,7 +313,7 @@ def replace_products(store, product, amount):
 def load_orders(customer):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
-    cursor.execute(SQLITE_ORDERS, str(customer))
+    cursor.execute(SQLITE_ORDERS, (customer,))
     orders = cursor.fetchall()
     return orders
 
@@ -320,7 +321,7 @@ def load_orders(customer):
 def load_products(order):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
-    cursor.execute(SQLITE_PRODUCTS, str(order))
+    cursor.execute(SQLITE_PRODUCTS, (order,))
     order = cursor.fetchall()
     return order
 
