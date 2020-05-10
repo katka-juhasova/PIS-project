@@ -7,11 +7,14 @@ from .services import order_courier
 from .services import checkOrderWeekendTime
 from .services import generate_email_text
 from .services import replace_products
+from .services import load_orders
+from .services import load_products
 from .forms import *
 from django.contrib import messages
 import CIS.models as models
 from django.http import HttpResponse
 import zeep
+from decimal import *
 
 customer = None
 order = None
@@ -35,7 +38,7 @@ def home(request):
                 elif order.delivery_type == 'personal collection':
                     new_order.delivery_time_to = "2000-01-01 10:00"
                     new_order.delivery_time_from = "2000-01-01 10:00"
-                new_order.courier = order.courier_id
+                new_order.courier_id = order.courier_id
                 new_order.total_price = order.total_price
                 new_order.total_weight = order.total_weight
                 new_order.total_amount = order.total_amount
@@ -118,6 +121,7 @@ def my_orders(request):
     global customer
     global order
 
+
     # handle potential login from previous site
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
@@ -166,11 +170,55 @@ def my_orders(request):
             messages.add_message(request, messages.SUCCESS,
                                  'Boli ste úspešne prihlásený.')
 
-    # handle adding new product
-
-    # init new empty order
+    orders = load_orders(db_address[0].id)
     order = Order(customer)
-    return render(request, 'CIS/my_orders.html')
+    context = {
+        'orders': orders
+    }
+    return render(request, 'CIS/my_orders.html', context)
+
+
+def order(request):
+    global customer
+    global order
+    if request.method == 'POST':
+        for key in request.POST.items():
+            if key[0] == 'csrfmiddlewaretoken':
+                continue
+            products = load_products(key[0])
+            for product in products:
+                if product[4] == 'odstranenie':
+                    continue
+                db_product = models.Product.objects.filter(id=product[0])
+                id_num = product[0]
+                name = db_product[0].name
+                price = db_product[0].price
+                weight = db_product[0].weight
+                breakable = db_product[0].breakable
+                image = db_product[0].image
+                amount = product[2]
+                alternative_for = product[1]
+                available = product[3]
+                status = product[4]
+
+                new_product = Product(id_num=id_num, name=name, price=price, weight=weight,
+                                  breakable=breakable, amount=amount, status=status,
+                                  alternative_for=alternative_for, available=available, image=image)
+
+                order.add_product(new_product)
+                order.total_amount += product[2] - 1
+                order.total_price += db_product[0].price * (product[2] - 1)
+                order.total_weight += db_product[0].weight * (product[2] - 1)
+
+        totalPriceForProductType = dict()
+        for key, value in order.products.items():
+            totalPriceForProductType[key] = value.amount*value.price
+        context = {
+                'products': order.products.items(),
+                'productTypePrice': totalPriceForProductType.items(),
+                'order': order,
+            }
+        return render(request, 'CIS/my_orders.html', context)
 
 
 def add_from_catalogue(request):
@@ -277,6 +325,7 @@ def login(request):
 def log(request):
     return render(request, 'CIS/log.html')
 
+
 def order_details(request):
     global order
     return render(request, 'CIS/order_details.html')
@@ -301,7 +350,6 @@ def delete_product(request):
     totalPriceForProductType = dict()
     for key, value in order.products.items():
         totalPriceForProductType[key] = value.amount * value.price
-    order.delivery_type = 'personal collection'
     context = {
         'products': order.products.items(),
         'productTypePrice': totalPriceForProductType.items(),
