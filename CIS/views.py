@@ -115,6 +115,61 @@ def home(request):
 
 
 def my_orders(request):
+    global customer
+    global order
+
+    # handle potential login from previous site
+    if request.method == 'POST':
+        login_form = LoginForm(request.POST)
+
+        # validate email with WSDL
+        validator_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/Validator?WSDL'
+        validator_client = zeep.Client(wsdl=validator_wsdl)
+        success = validator_client.service.validateEmail(
+            request.POST['email'])
+
+        if login_form.is_valid() and success:
+
+            db_customer = models.Customer.objects.filter(
+                email=request.POST['email'], password=request.POST['password'])
+
+            # if there's record about our guy in db just load it into customer
+            if len(db_customer) == 1:
+                name = db_customer[0].name
+                surname = db_customer[0].surname
+                phone = db_customer[0].phone
+                email = db_customer[0].email
+                db_address = models.Address.objects.filter(
+                    id=db_customer[0].address_id)
+                street = db_address[0].street
+                psc = db_address[0].psc
+                municipality = db_address[0].municipality
+                city = db_address[0].city
+
+                customer = Customer(email=email, name=name, surname=surname,
+                                    phone=phone, street=street, psc=psc,
+                                    municipality=municipality, city=city)
+
+            # if there's no customer found print error and let the customer
+            # try to log in again
+            if customer is None:
+                messages.add_message(request, messages.ERROR,
+                                     'Nesprávny e-mail alebo heslo.')
+                context = {
+                    'email': request.POST['email'],
+                    'password': request.POST['password']
+                }
+                return render(request, 'CIS/log.html', context=context)
+
+            # if we got here, we have read our customer details from db
+            # and we'll send message about successful login to the catalogue
+            messages.add_message(request, messages.SUCCESS,
+                                 'Boli ste úspešne prihlásený.')
+
+    # handle adding new product
+
+    # init new empty order
+    order = Order(customer)
     return render(request, 'CIS/my_orders.html')
 
 
@@ -218,6 +273,9 @@ def catalogue(request):
 def login(request):
     return render(request, 'CIS/login.html')
 
+
+def log(request):
+    return render(request, 'CIS/log.html')
 
 def order_details(request):
     global order

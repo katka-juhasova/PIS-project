@@ -1,0 +1,35 @@
+{% extends "CIS/base.html" %}
+{% load static %}
+{% block content %}
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <div class="alert alert-danger alert-dismissable" role="alert" style="text-align: center">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h1 class="text-center" style="margin-top: 2%"> Prihlásenie </h1>
+
+  <div class="login-page">
+    <div class="form">
+      <form action="/e-shop/my_orders/" method="post">{% csrf_token %}
+        {% if email %}
+          <input type="email" placeholder="e-mail" name="email" value="{{ email }}" required>
+        {% else %}
+          <input type="email" placeholder="e-mail" name="email" required/>
+        {% endif %}
+        {% if password %}
+          <input type="password" placeholder="heslo" name="password" value="{{ password }}" required>
+        {% else %}
+          <input type="password" placeholder="heslo" name="password" required/>
+        {% endif %}
+        <button type="submit" class="button-dark">Prihlásiť sa</button>
+      </form>
+    </div>
+  </div>
+
+{% endblock content %}
