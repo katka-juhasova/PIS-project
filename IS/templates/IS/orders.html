@@ -1,25 +1,25 @@
 {% extends "IS/base.html" %}
 {% block content %}
-<!--  <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%">
+<h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%">
     Zoznam objednávok
-  </h1>
+</h1>
   <table class="card shopping-cart">
     <thead class="card-header bg-dark text-light">
-      <div class="row">
-        <div class="col-12 col-sm-12 col-md-4 text-center">
+      <tr class="row">
+        <th class="col-12 col-sm-12 col-md-4 text-center">
           <div class="product-name"><strong>ID Objednávky</strong></div>      
-        </div>
-        <div class="col-12 col-sm-12 col-md-4 text-center">
+        </th>
+        <th class="col-12 col-sm-12 col-md-4 text-center">
           <div class="product-name"><strong>Prevádzka</strong></div>      
-        </div>
-        <div class="col-12 col-sm-12 col-md-4 text-center">
+        </th>
+        <th class="col-12 col-sm-12 col-md-4 text-center">
           <div class="product-name"><strong>Meno zákazníka</strong></div>      
-        </div>
-      </div>
+        </th>
+      </tr>
     </thead>
     <tbody class="card-body">
       <!-- Orders -->
- <!--     {% for order in orders %}
+      {% for order in orders %}
         <tr class="row">
           <td class="col-12 col-sm-12 col-md-4 text-center">
             <h5 class="product-name"><strong>{{ order.id }}</strong></h5>
@@ -33,70 +33,46 @@
         </tr>
       {% endfor%}
       <!-- END Orders -->
- <!--   </tbody>
+    </tbody>
   </table>
 
-  {% if orders.has_other_pages %}
-    <ul class="pagination">
-      {% if orders.has_previous %}
-        <li><a href="?page={{ orders.previous_page_number }}">&laquo;</a></li>
-      {% else %}
-        <li class="disabled"><span>&laquo;</span></li>
-      {% endif %}
-      {% for i in orders.paginator.page_range %}
-        {% if orders.number == i %}
-          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-        {% else %}
-          <li><a href="?page={{ i }}">{{ i }}</a></li>
-        {% endif %}
-      {% endfor %}
-      {% if orders.has_next %}
-        <li><a href="?page={{ orders.next_page_number }}">&raquo;</a></li>
-      {% else %}
-        <li class="disabled"><span>&raquo;</span></li>
-      {% endif %}
-    </ul>
-  {% endif %}
-
-      <div class="card-footer">
-        <div class="row justify-content-center" style="margin-top: 5%">
-          <form>
-            <button class="button-light" type="submit">Upraviť náhrady</button>
-          </form>
-          <div style="width: 7%"></div>
-          <form action="/e-shop/settings/" method="get">
-            <button class="button-dark" type="submit">Pokračovať</button>
-          </form>
-        </div>
-      </div>-->
-{% for item in items %}
-  <p>{{ item.pk }} {{ item.title}}</p>
-{% endfor %}
-
-{% if items.paginator.num_pages > 1 %}
+<!--Pagination bar-->
+{% if orders.paginator.num_pages > 1 %}
 <div class="pagination">
-  {% if items.has_previous %}
+  {% if orders.has_previous %}
       <a class="pagination-action" href="?page=1">
           <i class="fa fa-angle-double-left" aria-hidden="true"></i> </a>
-      <a class="pagination-action" href="?page={{ items.previous_page_number }}">
+      <a class="pagination-action" href="?page={{ orders.previous_page_number }}">
           <i class="fa fa-angle-left" aria-hidden="true"></i>
       </a>
   {% endif %}
-  {% for num in items.paginator.page_range %}
-      {% if items.number == num %}
+  {% for num in orders.paginator.page_range %}
+      {% if orders.number == num %}
           <span class="pagination-number pagination-current">{{ num }}</span>
-      {% elif num > items.number|add:'-3' and num < items.number|add:'3' %}
+      {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
           <a class="pagination-number" href="?page={{ num }}">{{ num }}</a>
       {% endif %}
   {% endfor %}
-  {% if items.has_next %}
-      <a class="pagination-action" href="?page={{ items.next_page_number }}">
+  {% if orders.has_next %}
+      <a class="pagination-action" href="?page={{ orders.next_page_number }}">
           <i class="fa fa-angle-right" aria-hidden="true"></i>
       </a>
-      <a class="pagination-action" href="?page={{ items.paginator.num_pages }}">
+      <a class="pagination-action" href="?page={{ orders.paginator.num_pages }}">
           <i class="fa fa-angle-double-right" aria-hidden="true"></i>
       </a>
   {% endif %}
 </div>
 {% endif %}
+
+<!--<div class="card-footer">
+  <div class="row justify-content-center" style="margin-top: 5%">
+    <form>
+      <button class="button-light" type="submit">Upraviť náhrady</button>
+    </form>
+    <div style="width: 7%"></div>
+    <form action="/e-shop/settings/" method="get">
+      <button class="button-dark" type="submit">Pokračovať</button>
+    </form>
+  </div>
+</div>-->
 {% endblock content %}
