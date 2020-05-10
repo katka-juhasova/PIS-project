@@ -1,0 +1,50 @@
+{% extends "IS/base.html" %}
+{% block content %}
+  <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%">
+    Zoznam objednávok
+  </h1>
+  <div class="card shopping-cart"></div>
+    <div class="card-header bg-dark text-light">
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-4 text-center">
+          <div class="product-name"><strong>ID Objednávky</strong></div>      
+        </div>
+        <div class="col-12 col-sm-12 col-md-4 text-center">
+          <div class="product-name"><strong>Prevádzka</strong></div>      
+        </div>
+        <div class="col-12 col-sm-12 col-md-4 text-center">
+          <div class="product-name"><strong>ID zákazníka</strong></div>      
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Orders -->
+      {% for order in orders %}
+      <hr>
+      <div class="row">
+          <div class="col-12 col-sm-12 col-md-4 text-center">
+            <h5 class="product-name"><strong>{{ order.id }}</strong></h5>
+          </div>
+          <div class="col-12 col-sm-12 col-md-4 text-center">
+            <h5 class="product-name"><strong>{{ order.store }}</strong></h5>
+          </div>
+          <div class="col-12 col-sm-12 col-md-4 text-center">
+            <h5 class="product-name"><strong>{{ order.customer }}</strong></h5>
+          </div>   
+      </div>
+      {% endfor%}
+      <!-- END Orders -->
+    </div>
+    <div class="card-footer">
+      <div class="row justify-content-center" style="margin-top: 5%">
+        <form>
+          <button class="button-light" type="submit">Upraviť náhrady</button>
+        </form>
+        <div style="width: 7%"></div>
+        <form action="/e-shop/settings/" method="get">
+          <button class="button-dark" type="submit">Pokračovať</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
