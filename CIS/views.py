@@ -21,71 +21,65 @@ def home(request):
 
     # if the customer is getting here after hitting button in order details
     # save the order to db
-    # if request.method == 'POST':
-    #     for key, value in request.POST.items():
-    #         if key == 'save order':
-    #             new_order = models.Order()
-    #             new_order.store_id = order.store_id
-    #             new_order.delivery_type = order.delivery_type
-    #             new_order.delivery_time_from = order.delivery_time_from
-    #             new_order.delivery_time_to = order.delivery_time_to
-    #             new_order.courier_id = order.courier_id
-    #             new_order.total_price = order.total_price
-    #             new_order.total_weight = order.total_weight
-    #             new_order.total_amount = order.total_amount
-    #             new_order.breakable = order.breakable
-    #             new_order.prepared = order.prepared
-    #
-    #             # if the customer exists just add id
-    #             # otherwise create customer record with random password
-    #             db_customer = models.Customer.objects.filter(
-    #                 email=customer.email)
-    #
-    #             if len(db_customer) > 0:
-    #                 new_order.customer_id = db_customer[0]['id']
-    #             else:
-    #                 new_address = models.Address()
-    #                 new_address.street = customer.address.street
-    #                 new_address.psc = customer.address.psc
-    #                 new_address.municipality = customer.address.municipality
-    #                 new_address.city = customer.address.city
-    #                 new_address.save()
-    #
-    #                 new_customer = models.Customer()
-    #                 new_customer.name = customer.name
-    #                 new_customer.surname = customer.surname
-    #                 new_customer.phone = customer.phone
-    #                 new_customer.email = customer.email
-    #                 new_customer.address = new_address.id
-    #                 new_customer.password = '12345678'
-    #                 new_customer.save()
-    #
-    #                 new_order.customer_id = new_customer.id
-    #
-    #             new_order.save()
-    #
-    #             for key, value in order.products.items():
-    #                 new_product = models.ProductsInOrder()
-    #                 new_product.product_id = key
-    #                 new_product.alternative_for = value.alternative_for
-    #                 new_product.amount = value.amount
-    #                 new_product.available = value.available
-    #                 new_product.status = value.status
-    #                 new_product.order_id = new_order.id
-    #                 new_product.save()
-    #
-    #             messages.add_message(request, messages.SUCCESS,
-    #                                  'Objednávka bola úspešne odoslaná.')
-
-    '''
-    NOTE: If you wanna uncomment the upper section comment there 5 lines
-    '''
     if request.method == 'POST':
-        for key, value in request.POST.items():
+        for key, value in request.POST.items():             
             if key == 'save order':
+                new_order = models.Order()
+                new_order.store_id = order.store_id
+                new_order.delivery_type = order.delivery_type
+                if order.delivery_type == 'curier':
+                    new_order.delivery_time_to = order.delivery_time_to 
+                    new_order.delivery_time_from = order.delivery_time_from
+                elif order.delivery_type == 'personal collection':
+                    new_order.delivery_time_to = "2000-01-01 10:00"
+                    new_order.delivery_time_from = "2000-01-01 10:00"
+                new_order.total_price = order.total_price
+                new_order.total_weight = order.total_weight
+                new_order.total_amount = order.total_amount
+                new_order.breakable = order.breakable
+                new_order.prepared = order.prepared
+                
+    
+                # if the customer exists just add id
+                # otherwise create customer record with random password
+                db_customer = models.Customer.objects.filter(
+                    email=customer.email)
+    
+                if len(db_customer) > 0:
+                    new_order.customer_id = db_customer[0].id
+                else:
+                    new_address = models.Address()
+                    new_address.street = customer.address.street
+                    new_address.psc = customer.address.psc
+                    new_address.municipality = customer.address.municipality
+                    new_address.city = customer.address.city
+                    new_address.save()
+    
+                    new_customer = models.Customer()
+                    new_customer.name = customer.name
+                    new_customer.surname = customer.surname
+                    new_customer.phone = customer.phone
+                    new_customer.email = customer.email
+                    new_customer.address = new_address.id
+                    new_customer.password = '12345678'
+                    new_customer.save()
+    
+                    new_order.customer_id = new_customer.id
+    
+                new_order.save()
+    
+                for key, value in order.products.items():
+                    new_product = models.ProductsInOrder()
+                    new_product.product_id = key
+                    new_product.alternative_for = value.alternative_for
+                    new_product.amount = value.amount
+                    new_product.available = value.available
+                    new_product.status = value.status
+                    new_product.order_id = new_order.id
+                    new_product.save()
+    
                 messages.add_message(request, messages.SUCCESS,
-                                     'Objednávka bola úspešne odoslaná.')
-
+                                      'Objednávka bola úspešne odoslaná.')
                 # send e-mail to the customer
                 email_text = generate_email_text(order)
                 email_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/NotificationServices/Email?WSDL'
@@ -95,6 +89,25 @@ def home(request):
                     'Potvrdenie objednávky', email_text
                 )
                 print(email_text)
+
+   # '''
+   # NOTE: If you wanna uncomment the upper section comment there 5 lines
+   # '''
+    #if request.method == 'POST':
+    #    for key, value in request.POST.items():
+    #        if key == 'save order':
+    #            messages.add_message(request, messages.SUCCESS,
+    #                                 'Objednávka bola úspešne odoslaná.')
+    #
+    #            # send e-mail to the customer
+    #            email_text = generate_email_text(order)
+    #            email_wsdl = 'http://pis.predmety.fiit.stuba.sk/pis/ws/NotificationServices/Email?WSDL'
+    #            email_client = zeep.Client(wsdl=email_wsdl)
+    #            email_client.service.notify(
+    #                '024', 'NXWZ2Q', customer.email,
+    #                'Potvrdenie objednávky', email_text
+    #            )
+    #            print(email_text)
     return render(request, 'CIS/home.html')
 
 

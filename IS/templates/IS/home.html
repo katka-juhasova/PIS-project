@@ -1,0 +1,22 @@
+{% extends "IS/base.html" %}
+{% load static %}
+{% block content %}
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <div class="alert alert-success alert-dismissable" role="alert" style="text-align: center">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h1 class="text-center" style="margin-top: 2%"> Informačný systém prevádzky </h1>
+  <img class=home-image alt=Home-image src={% static "home-image.jpg" %}>
+  <div class="row justify-content-center" style="margin-top: 5%">
+    <form action="login" method="get">
+      <button class="button-dark" type="submit">Prihlásiť sa do systému</button>
+    </form>
+  </div>
+{% endblock content %}

@@ -1,0 +1,64 @@
+{% extends "IS/base.html" %}
+{% load static %}
+{% block content %}
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <div class="alert alert-danger alert-dismissable" role="alert" style="text-align: center">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+<h1 class="text-center" style="margin-top: 2%"> Prihlásenie </h1>
+<div class="row justify-content-center" style="margin-top: 3%;">
+  <div class="col-2">
+    <div class="form-check">
+      <input name="skladnik" class="form-check-input" type="checkbox" value="" id="skladnikCheck" onclick="displaySkladnik()">
+      <label class="form-check-label" for="skladnikCheck">
+        <strong>Skladník</strong>
+      </label>
+    </div>
+  </div>
+  <div class="col-2">
+    <div class="form-check">
+      <input name="pokladnik" class="form-check-input" type="checkbox" value="" id="pokladnikCheck" onclick="displayPokladnik()">
+      <label class="form-check-label" for="pokladnikCheck">
+        <strong>Pokladník</strong>
+      </label>
+    </div>
+  </div>
+</div>
+
+
+<div class="container" id="skladnikText" style="display:none">
+  <h3 class="text-center" style="margin-top: 2%"> Skladník </h3>
+  <div class="login-page">
+    <div class="form">
+      <form action="/is/orders/" method="post">{% csrf_token %}
+          <input type="email" placeholder="e-mail" name="email" value="skladnik@gmail.com" required>
+          <input type="password" placeholder="heslo" name="password" required>
+        <button type="submit" class="button-dark">Prihlásiť sa</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="pokladnikText" style="display:none">
+  <h3 class="text-center" style="margin-top: 2%"> Pokladník </h3>
+  <div class="login-page">
+    <div class="form">
+      <form action="/is/orders/" method="post">{% csrf_token %}
+          <input type="email" placeholder="e-mail" name="email" value="pokladnik@gmail.com" required>
+          <input type="password" placeholder="heslo" name="password" required>
+        <button type="submit" class="button-dark">Prihlásiť sa</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+        
+{% endblock content %}

@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    function displaySkladnik() {
+      var checkBox = document.getElementById("skladnikCheck");
+      var checkBox2 = document.getElementById("pokladnikCheck");
+      var text = document.getElementById("skladnikText");
+      var text2 = document.getElementById("pokladnikText");
+      if (checkBox.checked == true){
+        checkBox2.checked = false
+        text.style.display = "block";
+        text2.style.display = "none";
+      } else {
+        text.style.display = "none";
+      }
+    }
+
+    function displayPokladnik() {
+      var checkBox = document.getElementById("skladnikCheck");
+      var checkBox2 = document.getElementById("pokladnikCheck");
+      var text = document.getElementById("skladnikText");
+      var text2 = document.getElementById("pokladnikText");
+      if (checkBox2.checked == true){
+        checkBox.checked = false
+        text2.style.display = "block";
+        text.style.display = "none";
+      } else {
+        text2.style.display = "none";
+      }
+    }
+  </script>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+  <!-- STATIC CSS -->
+  <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-datetimepicker.css' %}" >
+  <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+
+  {% if title %}
+    <title>Online obchod - {{ title }}</title>
+  {% else %}
+    <title>Online obchod</title>
+  {% endif %}
+</head>
+<body>
+<header class="site-header">
+  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+    <div class="container">
+      <a class="navbar-brand mr-4" href="{% url 'homeIS' %}"> Online obchod </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse"
+              data-target="#navbarToggle" aria-controls="navbarToggle"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+</header>
+<main role="main" class="container">
+  <div class="row">
+    <div class="col-md-12">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</main>
+<div class="footer">
+  <p class="mr-4">© Katarína Juhásova, Matej Glemba, Dávid Kecskés</p>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'bootstrap-datetimepicker.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+{% block skripts %}{% endblock %}
+</body>
+</html>
