@@ -45,7 +45,7 @@
                   {% if product_key == key %}
                     <h5><strong>Cena: {{ product_value }}<span class="text-muted">€</span></strong></h5>
                     {% if value.alternative_for != None %}
-                    <form action="/e-shop/delete_product/" method="post" style="display: inline-block"> {% csrf_token %}
+                    <form action="/e-shop/remove_product/" method="post" style="display: inline-block"> {% csrf_token %}
                       <button class="btn" type="submit" name="{{ value.id_num }}" style="color: darkred" >X</button>
                     </form>
                     {% endif %}

@@ -20,9 +20,12 @@ customer = None
 order = None
 alt = False
 
+
 def home(request):
     global order
     global customer
+    global alt
+    alt = False
 
     # if the customer is getting here after hitting button in order details
     # save the order to db
@@ -186,7 +189,7 @@ def order(request):
             if key[0] == 'csrfmiddlewaretoken':
                 continue
             products = load_products(key[0])
-            for product in products:
+            for product in list(products):
                 if product[4] == 'odstranenie':
                     continue
                 db_product = models.Product.objects.filter(id=product[0])
@@ -218,7 +221,7 @@ def order(request):
                 'productTypePrice': totalPriceForProductType.items(),
                 'order': order,
             }
-        return render(request, 'CIS/my_orders.html', context)
+        return render(request, 'CIS/order.html', context)
 
 
 def add_from_catalogue(request):
@@ -359,6 +362,54 @@ def delete_product(request):
     return render(request, 'CIS/order_details.html', context)
 
 
+def delete_product(request):
+    global order
+    if request.method == 'POST':
+        for key in request.POST.items():
+            if key[0] == 'csrfmiddlewaretoken':
+                continue
+            order.total_amount -= order.products[float(key[0])].amount
+            order.total_price -= (order.products[float(key[0])].price * order.products[float(key[0])].amount)
+            order.total_weight -= (order.products[float(key[0])].weight * order.products[float(key[0])].amount)
+            order.products[float(key[0])].amount = 0
+            order.products[float(key[0])].status = 'odstranenie'
+    store = models.Store.objects.get(id=order.store_id)
+    totalPriceForProductType = dict()
+    for key, value in order.products.items():
+        totalPriceForProductType[key] = value.amount * value.price
+    context = {
+        'products': order.products.items(),
+        'productTypePrice': totalPriceForProductType.items(),
+        'order': order,
+        'store': store,
+    }
+    return render(request, 'CIS/order_details.html', context)
+
+
+def remove_product(request):
+    global order
+    if request.method == 'POST':
+        for key in request.POST.items():
+            if key[0] == 'csrfmiddlewaretoken':
+                continue
+            order.total_amount -= order.products[float(key[0])].amount
+            order.total_price -= (order.products[float(key[0])].price * order.products[float(key[0])].amount)
+            order.total_weight -= (order.products[float(key[0])].weight * order.products[float(key[0])].amount)
+            order.products[float(key[0])].amount = 0
+            order.products[float(key[0])].status = 'odstranenie'
+    store = models.Store.objects.get(id=order.store_id)
+    totalPriceForProductType = dict()
+    for key, value in order.products.items():
+        totalPriceForProductType[key] = value.amount * value.price
+    context = {
+        'products': order.products.items(),
+        'productTypePrice': totalPriceForProductType.items(),
+        'order': order,
+        'store': store,
+    }
+    return render(request, 'CIS/order_details.html', context)
+
+
 def shopping_cart_empty(request):
     return render(request, 'CIS/shopping_cart_empty.html')
 
@@ -441,31 +492,24 @@ def settings(request):
 
             if order.store_id is None:
                 store = choose_suitable_store(order)
-                messages.add_message(request, messages.SUCCESS,
-                                        'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
+                messages.add_message(request, messages.SUCCESS, 'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
                 store_number = store.id_num
             else:
                 store_number = order.store_id
-
             if alt is False:
                 alt = True
-                product_num = len(order.products)
-                for product in range(1, product_num + 1):
-                    alternative, alternative_amount, store_amount = replace_products(store_number,
-                                                                                     order.products[
-                                                                                         str(product)].id_num,
-                                                                                     order.products[
-                                                                                         str(product)].amount)
+                for product in list(order.products.items()):
+                    alternative, alternative_amount, store_amount = replace_products(store_number, order.products[product[0]].id_num, order.products[product[0]].amount)
                     if alternative is None:
                         continue
-                    order.total_price += (order.products[str(product)].price * store_amount) - (
-                            order.products[str(product)].price * order.products[str(product)].amount)
-                    order.total_weight += (order.products[str(product)].weight * store_amount) - (
-                            order.products[str(product)].weight * order.products[str(product)].amount)
-                    order.total_amount += store_amount - order.products[str(product)].amount
-                    order.products[str(product)].amount = store_amount
+                    order.total_price += (order.products[product[0]].price * store_amount) - (
+                                order.products[product[0]].price * order.products[product[0]].amount)
+                    order.total_weight += (order.products[product[0]].weight * store_amount) - (
+                                order.products[product[0]].weight * order.products[product[0]].amount)
+                    order.total_amount += store_amount - order.products[product[0]].amount
+                    order.products[product[0]].amount = store_amount
                     if store_amount == 0:
-                        order.products[str(product)].available = False
+                        order.products[product[0]].available = False
                     if alternative_amount > 0:
                         db_product = models.Product.objects.filter(id=alternative)
                         id_num = alternative
@@ -475,7 +519,7 @@ def settings(request):
                         breakable = db_product[0].breakable
                         image = db_product[0].image
                         amount = alternative_amount
-                        alternative_for = product
+                        alternative_for = product[0]
                         available = True
                         status = 'nepripravený'
 
@@ -502,29 +546,22 @@ def settings(request):
 
     if order.store_id is None:
         store = choose_suitable_store(order)
-        messages.add_message(request, messages.SUCCESS,
-                                        'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
+        messages.add_message(request, messages.SUCCESS, 'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
         store_number = store.id_num
     else:
         store_number = order.store_id
-
     if alt is False:
         alt = True
-        product_num = len(order.products)
-        for product in range(1, product_num + 1):
-            alternative, alternative_amount, store_amount = replace_products(store_number,
-                                                                             order.products[str(product)].id_num,
-                                                                             order.products[str(product)].amount)
+        for product in list(order.products.items()):
+            alternative, alternative_amount, store_amount = replace_products(store_number, order.products[product[0]].id_num, order.products[product[0]].amount)
             if alternative is None:
                 continue
-            order.total_price += (order.products[str(product)].price * store_amount) - (
-                        order.products[str(product)].price * order.products[str(product)].amount)
-            order.total_weight += (order.products[str(product)].weight * store_amount) - (
-                        order.products[str(product)].weight * order.products[str(product)].amount)
-            order.total_amount += store_amount - order.products[str(product)].amount
-            order.products[str(product)].amount = store_amount
+            order.total_price += (order.products[product[0]].price * store_amount) - (order.products[product[0]].price * order.products[product[0]].amount)
+            order.total_weight += (order.products[product[0]].weight * store_amount) - (order.products[product[0]].weight * order.products[product[0]].amount)
+            order.total_amount += store_amount - order.products[product[0]].amount
+            order.products[product[0]].amount = store_amount
             if store_amount == 0:
-                order.products[str(product)].available = False
+                order.products[product[0]].available = False
             if alternative_amount > 0:
                 db_product = models.Product.objects.filter(id=alternative)
                 id_num = alternative
@@ -534,7 +571,7 @@ def settings(request):
                 breakable = db_product[0].breakable
                 image = db_product[0].image
                 amount = alternative_amount
-                alternative_for = product
+                alternative_for = product[0]
                 available = True
                 status = 'nepripravený'
 
@@ -599,7 +636,7 @@ def delivery(request):
         context = {
                 'products': order.products.items(),
                 'productTypePrice': totalPriceForProductType.items(),
-                'order' : order,
-                'store' : store,
+                'order': order,
+                'store': store,
             }
         return render(request, 'CIS/order_details.html', context)
