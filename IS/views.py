@@ -4,6 +4,8 @@ import CIS.models as models
 from django.contrib import messages
 from .services import Customer, Order
 import zeep
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 customer = None
 order = None
@@ -56,9 +58,28 @@ def orders(request):
                                  'Boli ste úspešne prihlásený.')
 
     # load products to be shown in catalogue
-    context = {
-        'orders': models.Order.objects.all(),
-        'products': models.ProductsInOrder.objects.all(),
-    }
 
-    return render(request, 'IS/orders.html', context)
+   # order_list = models.Order.objects.all()
+   # page = request.GET.get('page', 1)
+
+   # paginator = Paginator(order_list, 1)
+   # try:
+   #     orders = paginator.page(page)
+   # except PageNotAnInteger:
+   #     orders = paginator.page(1)
+   # except EmptyPage:
+   #
+   #      orders = paginator.page(paginator.num_pages)
+    posts = models.Order.objects.all()
+
+    paginator = Paginator(posts, 1)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
+
+    return render(request,'IS/orders.html',{'items': posts})
+
+    #context = {
+    #    'products': models.ProductsInOrder.objects.all()
+    #}
+
+    #return render(request, 'IS/orders.html', context)
