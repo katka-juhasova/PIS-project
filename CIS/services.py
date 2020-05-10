@@ -14,6 +14,8 @@ from CIS.sql_queries import SQLITE_SELECT_PRODUCTS_IN_STORE
 from CIS.sql_queries import SQLITE_SELECT_COURIER_ID
 from CIS.sql_queries import SQLITE_SELECT_COURIER_AUTOMOBILE
 from CIS.sql_queries import SQLITE_SELECT_COURIER_BICYCLE
+from CIS.sql_queries import SQLITE_MISSING
+from CIS.sql_queries import SQLITE_ALTERNATIVE
 import operator
 import requests
 import json
@@ -283,6 +285,26 @@ def generate_email_text(order: Order):
     message += ' Ďakujeme za Vašu objednávku.'
     return message
 
+
+def replace_products(store, product, amount):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    cursor.execute(SQLITE_MISSING, (store, product))
+    store_amount = cursor.fetchall()
+    if store_amount[0][0] >= amount:
+        return None, None, None
+    cursor.execute(SQLITE_ALTERNATIVE, product)
+    alternative = cursor.fetchall()
+    cursor.execute(SQLITE_MISSING, (store, str(alternative[0][0])))
+    alternative_amount = cursor.fetchall()
+    if alternative_amount.__len__() == 0:
+        alternative_amounts = 0
+    else:
+        alternative_amounts = alternative_amount[0][0]
+    missing_amount = amount - store_amount[0][0]
+    if missing_amount <= alternative_amounts:
+        return alternative[0][0], missing_amount, store_amount[0][0]
+    return alternative[0][0], alternative_amounts, store_amount[0][0]
 
 # this main is just for testing the functionality of the functions
 if __name__ == '__main__':

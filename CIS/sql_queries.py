@@ -38,3 +38,11 @@ SQLITE_SELECT_COURIER_AUTOMOBILE = '''
 SQLITE_SELECT_COURIER_BICYCLE = '''
     SELECT bicycle FROM CIS_courier where id = ?
 '''
+
+SQLITE_MISSING = '''
+    SELECT amount FROM CIS_productsinstore WHERE store_id = ? AND product_id = ?
+'''
+
+SQLITE_ALTERNATIVE = '''
+    SELECT alternative FROM CIS_alternative where product = ?
+'''

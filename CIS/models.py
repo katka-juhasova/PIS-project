@@ -74,6 +74,8 @@ class Notification(models.Model):
     text = models.CharField(max_length=1000)
 
 
-
+class Alternative(models.Model):
+    product = models.IntegerField()
+    alternative = models.IntegerField()
 
 
