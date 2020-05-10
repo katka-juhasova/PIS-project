@@ -15,7 +15,6 @@ import zeep
 
 customer = None
 order = None
-alt = False
 
 def home(request):
     global order
@@ -312,7 +311,6 @@ def personal_info(request):
 def settings(request):
     global customer
     global order
-    global alt
 
     # handle creating new customer
     if request.method == 'POST' and customer is None:
@@ -337,50 +335,43 @@ def settings(request):
                 store = choose_suitable_store(order)
                 messages.add_message(request, messages.SUCCESS,
                                         'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
-                store_number = store.id_num
-            else:
-                store_number = order.store_id
 
-            if alt is False:
-                alt = True
-                product_num = len(order.products)
-                for product in range(1, product_num + 1):
-                    alternative, alternative_amount, store_amount = replace_products(store_number,
-                                                                                     order.products[
-                                                                                         str(product)].id_num,
-                                                                                     order.products[
-                                                                                         str(product)].amount)
-                    if alternative is None:
-                        continue
-                    order.total_price += (order.products[str(product)].price * store_amount) - (
+            product_num = len(order.products)
+            for product in range(1, product_num + 1):
+                alternative, alternative_amount, store_amount = replace_products(store.id_num,
+                                                                                 order.products[str(product)].id_num,
+                                                                                 order.products[str(product)].amount)
+                if alternative is None:
+                    continue
+                order.total_price += (order.products[str(product)].price * store_amount) - (
                             order.products[str(product)].price * order.products[str(product)].amount)
-                    order.total_weight += (order.products[str(product)].weight * store_amount) - (
+                order.total_weight += (order.products[str(product)].weight * store_amount) - (
                             order.products[str(product)].weight * order.products[str(product)].amount)
-                    order.total_amount += store_amount - order.products[str(product)].amount
-                    order.products[str(product)].amount = store_amount
-                    if store_amount == 0:
-                        order.products[str(product)].available = False
-                    if alternative_amount > 0:
-                        db_product = models.Product.objects.filter(id=alternative)
-                        id_num = alternative
-                        name = db_product[0].name
-                        price = db_product[0].price
-                        weight = db_product[0].weight
-                        breakable = db_product[0].breakable
-                        image = db_product[0].image
-                        amount = alternative_amount
-                        alternative_for = product
-                        available = True
-                        status = 'nepripravený'
+                order.total_amount += store_amount - order.products[str(product)].amount
+                order.products[str(product)].amount = store_amount
+                if store_amount == 0:
+                    order.products[str(product)].available = False
+                if alternative_amount > 0:
+                    db_product = models.Product.objects.filter(id=alternative)
+                    id_num = alternative
+                    name = db_product[0].name
+                    price = db_product[0].price
+                    weight = db_product[0].weight
+                    breakable = db_product[0].breakable
+                    image = db_product[0].image
+                    amount = alternative_amount
+                    alternative_for = product
+                    available = True
+                    status = 'nepripravený'
 
-                        alternative_product = Product(id_num=id_num, name=name, price=price, weight=weight,
-                                                      breakable=breakable, amount=amount, status=status,
-                                                      alternative_for=alternative_for, available=available, image=image)
+                    alternative_product = Product(id_num=id_num, name=name, price=price, weight=weight,
+                                                  breakable=breakable, amount=amount, status=status,
+                                                  alternative_for=alternative_for, available=available, image=image)
 
-                        order.add_product(alternative_product)
-                        order.total_amount += alternative_amount - 1
-                        order.total_price += db_product[0].price * (alternative_amount - 1)
-                        order.total_weight += db_product[0].weight * (alternative_amount - 1)
+                    order.add_product(alternative_product)
+                    order.total_amount += alternative_amount - 1
+                    order.total_price += db_product[0].price * (alternative_amount - 1)
+                    order.total_weight += db_product[0].weight * (alternative_amount - 1)
 
             '''
             NOTE FOR DAVID: store.missing_products id list containing id 
@@ -398,48 +389,39 @@ def settings(request):
         store = choose_suitable_store(order)
         messages.add_message(request, messages.SUCCESS,
                                         'Vaša objednávka bude spracovaná na prevádzke '+ store.city +', ' + store.municipality)
-        store_number = store.id_num
-    else:
-        store_number = order.store_id
 
-    if alt is False:
-        alt = True
-        product_num = len(order.products)
-        for product in range(1, product_num + 1):
-            alternative, alternative_amount, store_amount = replace_products(store_number,
-                                                                             order.products[str(product)].id_num,
-                                                                             order.products[str(product)].amount)
-            if alternative is None:
-                continue
-            order.total_price += (order.products[str(product)].price * store_amount) - (
-                        order.products[str(product)].price * order.products[str(product)].amount)
-            order.total_weight += (order.products[str(product)].weight * store_amount) - (
-                        order.products[str(product)].weight * order.products[str(product)].amount)
-            order.total_amount += store_amount - order.products[str(product)].amount
-            order.products[str(product)].amount = store_amount
-            if store_amount == 0:
-                order.products[str(product)].available = False
-            if alternative_amount > 0:
-                db_product = models.Product.objects.filter(id=alternative)
-                id_num = alternative
-                name = db_product[0].name
-                price = db_product[0].price
-                weight = db_product[0].weight
-                breakable = db_product[0].breakable
-                image = db_product[0].image
-                amount = alternative_amount
-                alternative_for = product
-                available = True
-                status = 'nepripravený'
+    product_num = len(order.products)
+    for product in range(1, product_num + 1):
+        alternative, alternative_amount, store_amount = replace_products(store.id_num, order.products[str(product)].id_num, order.products[str(product)].amount)
+        if alternative is None:
+            continue
+        order.total_price += (order.products[str(product)].price * store_amount) - (order.products[str(product)].price * order.products[str(product)].amount)
+        order.total_weight += (order.products[str(product)].weight * store_amount) - (order.products[str(product)].weight * order.products[str(product)].amount)
+        order.total_amount += store_amount - order.products[str(product)].amount
+        order.products[str(product)].amount = store_amount
+        if store_amount == 0:
+            order.products[str(product)].available = False
+        if alternative_amount > 0:
+            db_product = models.Product.objects.filter(id=alternative)
+            id_num = alternative
+            name = db_product[0].name
+            price = db_product[0].price
+            weight = db_product[0].weight
+            breakable = db_product[0].breakable
+            image = db_product[0].image
+            amount = alternative_amount
+            alternative_for = product
+            available = True
+            status = 'nepripravený'
 
-                alternative_product = Product(id_num=id_num, name=name, price=price, weight=weight,
-                                              breakable=breakable, amount=amount, status=status,
-                                              alternative_for=alternative_for, available=available, image=image)
+            alternative_product = Product(id_num=id_num, name=name, price=price, weight=weight,
+                              breakable=breakable, amount=amount, status=status,
+                              alternative_for=alternative_for, available=available, image=image)
 
-                order.add_product(alternative_product)
-                order.total_amount += alternative_amount - 1
-                order.total_price += db_product[0].price * (alternative_amount - 1)
-                order.total_weight += db_product[0].weight * (alternative_amount - 1)
+            order.add_product(alternative_product)
+            order.total_amount += alternative_amount - 1
+            order.total_price += db_product[0].price * (alternative_amount - 1)
+            order.total_weight += db_product[0].weight * (alternative_amount - 1)
 
 
     '''
