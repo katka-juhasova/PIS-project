@@ -1,9 +1,25 @@
 {% extends "CIS/base.html" %}
+{% load static %}
 {% block content %}
-  <p>
-    Zoznam objednávok pre daného zákazníka alebo nech mu to vynadá, že nie je
-    prihlásený. Pripadne sa este sem moze hodit prihlasovanie.
-    Hah, este mozne zamedzit moznost upravit spatne objednavku,
-    ak zakaznik nebol prihlaseny.
-  <p>
+<h1 class="text-center" style="margin-top: 2%"> Objednávky </h1>
+<div class="card shopping-cart" style="margin-bottom: 20px;">
+
+    <div class="card-header bg-dark text-light"></div>
+    <div class="card-body">
+    <form action="/e-shop/order/" method="post" > {% csrf_token %}
+      <!-- PRODUCT -->
+      {% for value in orders %}
+      <hr>
+      <div class="row">
+      <button type="submit" name="{{ value|cut:'('|cut:')'|cut:',' }}" style="border: none;background-color: transparent;cursor: pointer">
+          <h4 class="product-name" style="margin-left: 20px;"><strong>Objednávka č. {{ value|cut:'('|cut:')'|cut:',' }}</strong></h4>
+      </button>
+      </div>
+      {% endfor %}
+      <!-- END PRODUCT -->
+
+    </form>
+    </div>
+
+</div>
 {% endblock content %}

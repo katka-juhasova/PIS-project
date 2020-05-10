@@ -46,3 +46,11 @@ SQLITE_MISSING = '''
 SQLITE_ALTERNATIVE = '''
     SELECT alternative FROM CIS_alternative where product = ?
 '''
+
+SQLITE_ORDERS = '''
+    SELECT id FROM CIS_order where customer_id = ?
+'''
+
+SQLITE_PRODUCTS = '''
+    SELECT * FROM CIS_productsinorder JOIN CIS_product on CIS_productsinorder.order_id = CIS_product.id WHERE order_id = ?
+'''

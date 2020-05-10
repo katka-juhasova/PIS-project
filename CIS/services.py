@@ -16,6 +16,8 @@ from CIS.sql_queries import SQLITE_SELECT_COURIER_AUTOMOBILE
 from CIS.sql_queries import SQLITE_SELECT_COURIER_BICYCLE
 from CIS.sql_queries import SQLITE_MISSING
 from CIS.sql_queries import SQLITE_ALTERNATIVE
+from CIS.sql_queries import SQLITE_ORDERS
+from CIS.sql_queries import SQLITE_PRODUCTS
 import operator
 import requests
 import json
@@ -305,6 +307,23 @@ def replace_products(store, product, amount):
     if missing_amount <= alternative_amounts:
         return alternative[0][0], missing_amount, store_amount[0][0]
     return alternative[0][0], alternative_amounts, store_amount[0][0]
+
+
+def load_orders(customer):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    cursor.execute(SQLITE_ORDERS, str(customer))
+    orders = cursor.fetchall()
+    return orders
+
+
+def load_products(order):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    cursor.execute(SQLITE_PRODUCTS, str(order))
+    order = cursor.fetchall()
+    return order
+
 
 # this main is just for testing the functionality of the functions
 if __name__ == '__main__':

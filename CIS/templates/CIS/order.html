@@ -1,0 +1,62 @@
+{% extends "CIS/base.html" %}
+{% load static %}
+{% block content %}
+<h1 class="text-center" style="margin-top: 2%"> Objednávka </h1>
+<div class="card shopping-cart" style="margin-bottom: 20px;">
+
+    <div class="card-header bg-dark text-light"></div>
+    <div class="card-body">
+      <!-- PRODUCT -->
+      {% for key, value in products %}
+      {% if value.status == 'odstranenie' %}
+      <hr style="display: none">
+      <div class="row" style="display: none">
+      {% else %}
+      <hr>
+      <div class="row">
+      {% endif %}
+          <div class="col-12 col-sm-12 col-md-2 text-center">
+            <img class="img-responsive" src={% static value.image %} alt="prewiew" width="120" height="80">
+          </div>
+          <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
+              {% if value.alternative_for == None %}
+                 <h4 class="product-name"><strong>{{ value.name }}</strong></h4>
+              {% else %}
+                 <h4 class="product-name"><strong>{{ value.name }} (Alternatíva)</strong></h4>
+              {% endif %}
+              <h4>
+                <small>Hmotnosť/ks: {{ value.weight|floatformat:2 }}kg</small>
+              </h4>
+              <h4>
+                <small>Počet kusov: {{ value.amount }}</small>
+              </h4>
+              <h4>
+                {% if value.breakable %}
+                  <small>Rozbitné: áno</small>
+                {% else %}
+                  <small>Rozbitné: nie</small>
+                {% endif %}
+              </h4>
+          </div>
+          <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
+              <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
+                <h6><strong>Cena za kus: {{ value.price|floatformat:2 }}<span class="text-muted">€</span></strong></h6>
+                {% for product_key, product_value in productTypePrice %}
+                  {% if product_key == key %}
+                    <h5><strong>Cena: {{ product_value }}<span class="text-muted">€</span></strong></h5>
+                    {% if value.alternative_for != None %}
+                    <form action="/e-shop/delete_product/" method="post" style="display: inline-block"> {% csrf_token %}
+                      <button class="btn" type="submit" name="{{ value.id_num }}" style="color: darkred" >X</button>
+                    </form>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+      <!-- END PRODUCT -->
+    </div>
+
+</div>
+{% endblock content %}
