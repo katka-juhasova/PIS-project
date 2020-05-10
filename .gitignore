@@ -2,6 +2,9 @@
 CIS/__pycache__
 CIS/*.pyc
 CIS/migrations/__pycache__
+IS/__pycache__
+IS/*.pyc
+IS/migrations/__pycache__
 PISproject/__pycache__
 PISproject/*.pyc
 myenv/
