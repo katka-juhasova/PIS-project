@@ -376,31 +376,6 @@ def delete_product(request):
     return render(request, 'CIS/order_details.html', context)
 
 
-def delete_product(request):
-    global order
-
-    if request.method == 'POST':
-        for key in request.POST.items():
-            if key[0] == 'csrfmiddlewaretoken':
-                continue
-            order.total_amount -= order.products[float(key[0])].amount
-            order.total_price -= (order.products[float(key[0])].price * order.products[float(key[0])].amount)
-            order.total_weight -= (order.products[float(key[0])].weight * order.products[float(key[0])].amount)
-            order.products[float(key[0])].amount = 0
-            order.products[float(key[0])].status = 'odstranenie'
-    store = models.Store.objects.get(id=order.store_id)
-    totalPriceForProductType = dict()
-    for key, value in order.products.items():
-        totalPriceForProductType[key] = value.amount * value.price
-    context = {
-        'products': order.products.items(),
-        'productTypePrice': totalPriceForProductType.items(),
-        'order': order,
-        'store': store,
-    }
-    return render(request, 'CIS/order_details.html', context)
-
-
 def remove_product(request):
     global order
     global order_id
