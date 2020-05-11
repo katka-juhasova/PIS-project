@@ -9,16 +9,20 @@ from .services import generate_email_text
 from .services import replace_products
 from .services import load_orders
 from .services import load_products
+from .services import remove_service
+from .services import get_time
 from .forms import *
 from django.contrib import messages
 import CIS.models as models
 from django.http import HttpResponse
 import zeep
+from datetime import datetime, timedelta
 from decimal import *
 
 customer = None
 order = None
 alt = False
+order_id = None
 
 
 def home(request):
@@ -124,7 +128,6 @@ def my_orders(request):
     global customer
     global order
 
-
     # handle potential login from previous site
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
@@ -184,16 +187,24 @@ def my_orders(request):
 def order(request):
     global customer
     global order
+    global order_id
+
     if request.method == 'POST':
         for key in request.POST.items():
             if key[0] == 'csrfmiddlewaretoken':
                 continue
+            order_id = key[0]
+            time = get_time(key[0])
             products = load_products(key[0])
+            timestamp = datetime.strptime(time[0][0], '%Y-%m-%d %H:%M:%S')
+            tt = timestamp - datetime.now()
             for product in list(products):
                 if product[4] == 'odstranenie':
                     continue
-                db_product = models.Product.objects.filter(id=product[0])
-                id_num = product[0]
+                if product[1] is not None and tt < timedelta(hours=2):
+                    continue
+                db_product = models.Product.objects.filter(id=product[6])
+                id_num = product[6]
                 name = db_product[0].name
                 price = db_product[0].price
                 weight = db_product[0].weight
@@ -340,6 +351,7 @@ def alternatives(request):
 
 def delete_product(request):
     global order
+
     if request.method == 'POST':
         for key in request.POST.items():
             if key[0] == 'csrfmiddlewaretoken':
@@ -364,6 +376,7 @@ def delete_product(request):
 
 def delete_product(request):
     global order
+
     if request.method == 'POST':
         for key in request.POST.items():
             if key[0] == 'csrfmiddlewaretoken':
@@ -388,6 +401,8 @@ def delete_product(request):
 
 def remove_product(request):
     global order
+    global order_id
+
     if request.method == 'POST':
         for key in request.POST.items():
             if key[0] == 'csrfmiddlewaretoken':
@@ -397,7 +412,7 @@ def remove_product(request):
             order.total_weight -= (order.products[float(key[0])].weight * order.products[float(key[0])].amount)
             order.products[float(key[0])].amount = 0
             order.products[float(key[0])].status = 'odstranenie'
-    store = models.Store.objects.get(id=order.store_id)
+    remove_service(order_id, key[0], order.total_price, order.total_weight, order.total_amount)
     totalPriceForProductType = dict()
     for key, value in order.products.items():
         totalPriceForProductType[key] = value.amount * value.price
@@ -405,9 +420,8 @@ def remove_product(request):
         'products': order.products.items(),
         'productTypePrice': totalPriceForProductType.items(),
         'order': order,
-        'store': store,
     }
-    return render(request, 'CIS/order_details.html', context)
+    return render(request, 'CIS/order.html', context)
 
 
 def shopping_cart_empty(request):

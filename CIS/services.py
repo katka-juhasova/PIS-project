@@ -18,6 +18,9 @@ from CIS.sql_queries import SQLITE_MISSING
 from CIS.sql_queries import SQLITE_ALTERNATIVE
 from CIS.sql_queries import SQLITE_ORDERS
 from CIS.sql_queries import SQLITE_PRODUCTS
+from CIS.sql_queries import SQLITE_DELETE
+from CIS.sql_queries import SQLITE_UPDATE
+from CIS.sql_queries import SQLITE_ORDER_TIME
 import operator
 import requests
 import json
@@ -318,12 +321,32 @@ def load_orders(customer):
     return orders
 
 
-def load_products(order):
+def load_products(order_id):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
-    cursor.execute(SQLITE_PRODUCTS, (order,))
+    cursor.execute(SQLITE_PRODUCTS, (order_id,))
     order = cursor.fetchall()
     return order
+
+
+def remove_service(order_id, product_id, total_price, total_weight, total_amount):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    cursor.execute(SQLITE_DELETE, ('odstranenie', order_id, product_id,))
+    conn.commit()
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    cursor.execute(SQLITE_UPDATE, (total_price, total_weight, total_amount, order_id,))
+    conn.commit()
+    return None
+
+
+def get_time(order_id):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    cursor.execute(SQLITE_ORDER_TIME, (order_id,))
+    time = cursor.fetchall()
+    return time
 
 
 # this main is just for testing the functionality of the functions

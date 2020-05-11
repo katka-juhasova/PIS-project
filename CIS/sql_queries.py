@@ -52,5 +52,17 @@ SQLITE_ORDERS = '''
 '''
 
 SQLITE_PRODUCTS = '''
-    SELECT * FROM CIS_productsinorder JOIN CIS_product on CIS_productsinorder.order_id = CIS_product.id WHERE order_id = ?
+    SELECT * FROM CIS_productsinorder WHERE order_id = ?
+'''
+
+SQLITE_DELETE = '''
+    UPDATE CIS_productsinorder SET status = ? WHERE order_id = ? AND product_id = ?
+'''
+
+SQLITE_UPDATE = '''
+    UPDATE CIS_order SET total_price = ?, total_weight = ?, total_amount = ? WHERE id = ?
+'''
+
+SQLITE_ORDER_TIME = '''
+    SELECT delivery_time_from FROM CIS_order where id = ?
 '''
