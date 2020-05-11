@@ -121,9 +121,9 @@ class Courier:
 
 '''
 BP Výber prevádzky
-writes store id into Order attribute "store_id" 
-and returns Store object, which includes (besides other attributes) id number 
-(id_num) of the chosen store and list of id numbers of missing products which 
+writes store id into Order attribute "store_id"
+and returns Store object, which includes (besides other attributes) id number
+(id_num) of the chosen store and list of id numbers of missing products which
 are listed in the order but not available in chosen store (missing_products)
 '''
 
@@ -212,9 +212,9 @@ def choose_vehicle(order: Order) -> str:
 
 
 '''
-running this function with order parameter would add courier id 
-to order.courier_id if the courier was successfully found, otherwise the value 
-of courier_id shall remain None 
+running this function with order parameter would add courier id
+to order.courier_id if the courier was successfully found, otherwise the value
+of courier_id shall remain None
 NOTE: API must be running on http://127.0.0.1:5000/ when using this function
 '''
 
@@ -270,7 +270,7 @@ def checkOrderWeekendTime(deliveryFrom: str, deliveryTo: str):
 
     check_delivery_time_from = calendar_client.service.isWeekend(deliveryFrom.split(' ')[0])
     check_delivery_time_to = calendar_client.service.isWeekend(deliveryTo.split(' ')[0])
-    
+
     if check_delivery_time_from or check_delivery_time_to:
         return True
     else:
@@ -284,7 +284,7 @@ def generate_email_text(order: Order):
     message += 'celková cena: ' + str(order.total_price) + '€. '
     store = models.Store.objects.get(id=order.store_id)
     if order.delivery_type == 'curier':
-        courier = models.Courier.objects.get(id=order.courier_id)                
+        courier = models.Courier.objects.get(id=order.courier_id)
         message += 'Spôsob doručenia: Kuriér ,' + courier.name + '.\nZvolený čas doručenia: ' + order.delivery_time_from + ' - ' + order.delivery_time_to + '.\nPrevádzka: ' + store.address.city + ', ' + store.address.street + '.'
     elif order.delivery_type == 'personal collection':
         message += 'Spôsob doručenia: Osobný odber.\n Prevádzka: ' + store.address.city + ', ' + store.address.street + '.'

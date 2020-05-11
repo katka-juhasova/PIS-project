@@ -25,6 +25,7 @@ alt = False
 order_id = None
 
 
+
 def home(request):
     global order
     global customer
@@ -34,13 +35,13 @@ def home(request):
     # if the customer is getting here after hitting button in order details
     # save the order to db
     if request.method == 'POST':
-        for key, value in request.POST.items():             
+        for key, value in request.POST.items():
             if key == 'save order':
                 new_order = models.Order()
                 new_order.store_id = order.store_id
                 new_order.delivery_type = order.delivery_type
                 if order.delivery_type == 'curier':
-                    new_order.delivery_time_to = order.delivery_time_to 
+                    new_order.delivery_time_to = order.delivery_time_to
                     new_order.delivery_time_from = order.delivery_time_from
                 elif order.delivery_type == 'personal collection':
                     new_order.delivery_time_to = "2000-01-01 10:00"
@@ -51,13 +52,13 @@ def home(request):
                 new_order.total_amount = order.total_amount
                 new_order.breakable = order.breakable
                 new_order.prepared = order.prepared
-                
-    
+
+
                 # if the customer exists just add id
                 # otherwise create customer record with random password
                 db_customer = models.Customer.objects.filter(
                     email=customer.email)
-    
+
                 if len(db_customer) > 0:
                     new_order.customer_id = db_customer[0].id
                 else:
@@ -67,7 +68,7 @@ def home(request):
                     new_address.municipality = customer.address.municipality
                     new_address.city = customer.address.city
                     new_address.save()
-    
+
                     new_customer = models.Customer()
                     new_customer.name = customer.name
                     new_customer.surname = customer.surname
@@ -76,11 +77,11 @@ def home(request):
                     new_customer.address = new_address.id
                     new_customer.password = '12345678'
                     new_customer.save()
-    
+
                     new_order.customer_id = new_customer.id
-    
+
                 new_order.save()
-    
+
                 for key, value in order.products.items():
                     new_product = models.ProductsInOrder()
                     new_product.product_id = key
@@ -90,7 +91,7 @@ def home(request):
                     new_product.status = value.status
                     new_product.order_id = new_order.id
                     new_product.save()
-    
+
                 messages.add_message(request, messages.SUCCESS,
                                       'Objednávka bola úspešne odoslaná.')
                 # send e-mail to the customer
@@ -127,6 +128,7 @@ def home(request):
 def my_orders(request):
     global customer
     global order
+
 
     # handle potential login from previous site
     if request.method == 'POST':
@@ -237,7 +239,7 @@ def order(request):
 
 def add_from_catalogue(request):
     global order
-   
+
     if request.method == 'POST':
         product_id = None
         for key, value in request.POST.items():
@@ -261,7 +263,7 @@ def add_from_catalogue(request):
                           alternative_for=alternative_for, available=available, image=image)
 
         order.add_product(product)
-        
+
     # just return no content status since no new view needs to be rendered
     return HttpResponse(status=204)
 
@@ -328,7 +330,7 @@ def catalogue(request):
     context = {
         'products': models.Product.objects.all(),
     }
-    
+
     return render(request, 'CIS/catalogue.html', context)
 
 
@@ -547,7 +549,7 @@ def settings(request):
                         order.total_weight += db_product[0].weight * (alternative_amount - 1)
 
             '''
-            NOTE FOR DAVID: store.missing_products id list containing id 
+            NOTE FOR DAVID: store.missing_products id list containing id
             of unavailable products which needs to be replaced by alternatives
             this is the case when the customer is not logged it
             '''
@@ -600,7 +602,7 @@ def settings(request):
 
 
     '''
-    NOTE FOR DAVID: store.missing_products id list containing id of unavailable 
+    NOTE FOR DAVID: store.missing_products id list containing id of unavailable
     products which needs to be replaced by alternatives
     this is the case when customer is logged in
     '''
