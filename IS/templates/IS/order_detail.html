@@ -17,6 +17,7 @@
         </div>
     </div>
     <div class="card-body">
+        <form action="/is/orders/" method="post"> {% csrf_token %}
         <!-- PRODUCT -->
         {% for product in products %}
         <hr>
@@ -65,11 +66,21 @@
             </div>
             <div class="col-12 col-sm-12 col-md-4 text-center" style="padding-top: 70px;">
                     <select id="status" name="status" style="font-size: larger; background-color: darkgrey;">
-                        {% if product.status == 'pripravený' %}
-                            <option value="pripraveny">{{ product.status }}</option>
-                        {% else %}
-                            <option value="nepripraveny">{{ product.status }}</option>
-                            <option value="pripraveny">pripravený</option>
+                        {{ user.email }}
+                        {% if user.email == 'skladnik@gmail.com' %}
+                            {% if product.status == 'pripravený' %}
+                                <option value="pripravený">{{ product.status }}</option>
+                            {% else %}
+                                <option value="nepripravený">{{ product.status }}</option>
+                                <option value="pripravený">pripravený</option>
+                            {% endif %}
+                        {% elif user.email == 'pokladnik@gmail.com' %}
+                            {% if product.status == 'vyúčtovaný' %}
+                                <option value="vyúčtovaný">{{ product.status }}</option>
+                            {% else %}
+                                <option value="pripravený">{{ product.status }}</option>
+                                <option value="vyúčtovaný">vyúčtovaný</option>
+                            {% endif %}
                         {% endif %}
                     </select>
             </div>
@@ -93,7 +104,6 @@
         {% endif %}
         <div class="col-sm-3 justify-content-right">
             <div class="row">
-                <form action="/is/orders" method="post"> {% csrf_token %}
                     <button class="button-dark" style="margin-top: 5px;" name="save order" type="submit">Potvrdiť</button>
                 </form>
                 <form action="/is/orders" method="get" style="padding-left: 3%;">

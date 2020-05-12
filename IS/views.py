@@ -10,6 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 customer = None
 order = None
 orderId = None
+user = None
 
 def home(request):
     global order
@@ -21,6 +22,8 @@ def login(request):
 
 def order_detail(request, order_id):
     global orderId
+    global user
+
     orderId = order_id
     
     order = models.Order.objects.get(id=order_id)
@@ -46,6 +49,7 @@ def order_detail(request, order_id):
         'order': order,
         'store' : store,
         'customer': customer,
+        'user' : user,
     }
 
     if order.courier_id is not None:
@@ -55,7 +59,8 @@ def order_detail(request, order_id):
             'order': order,
             'store' : store,
             'customer': customer,
-            'curier' : curier
+            'curier' : curier,
+            'user' : user,
         }
 
     return render(request, 'IS/order_detail.html', context)
@@ -63,6 +68,41 @@ def order_detail(request, order_id):
 def orders(request):
     global customer
     global order
+    global orderId
+    global user
+
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            if key == 'save order':
+                if 'status' in request.POST:
+                    status = request.POST['status']
+                    models.ProductsInOrder.objects.filter(order = orderId).update(status = status)
+                    if user.email == 'pokladnik@gmail.com':
+                        models.Order.objects.filter(id=orderId).update(prepared=True)    
+                    
+                    orders = []
+                    # load products to be shown in catalogue
+                    if user.email == 'pokladnik@gmail.com':
+                        productsInOrderWhichAreReady = models.ProductsInOrder.objects.filter(status='pripravený').values('order').distinct()
+                        for productInOrderWhichIsReady in productsInOrderWhichAreReady:
+                            orderTemp = models.Order.objects.get(id=productInOrderWhichIsReady['order'])
+                            if orderTemp.prepared == False:
+                                orders.append(orderTemp)
+                    elif user.email == 'skladnik@gmail.com':
+                        productsInOrderWhichAreReady = models.ProductsInOrder.objects.filter(status='nepripravený').values('order').distinct()
+                        for productInOrderWhichIsReady in productsInOrderWhichAreReady:
+                            orderTemp = models.Order.objects.get(id=productInOrderWhichIsReady['order'])
+                            orders.append(orderTemp)
+                    
+                    paginator = Paginator(orders, 5)
+                    page = request.GET.get('page')
+                    orders = paginator.get_page(page)
+
+                    context = {
+                        'orders' : orders,
+                    }
+
+                    return render(request, 'IS/orders.html', context)
 
     # handle potential login from previous site
     if request.method == 'POST':
@@ -76,12 +116,52 @@ def orders(request):
 
         if login_form.is_valid() and success:
 
-            db_customer = models.Customer.objects.filter(
-                email=request.POST['email'], password=request.POST['password'])
+            db_customer = models.Customer.objects.get(email=request.POST['email'])
+            print(db_customer.email)
+            user = db_customer
 
-            # if there's no customer found print error and let the customer
-            # try to log in again
-            if db_customer is None:
+            # if we got here, we have read our customer details from db
+            # and we'll send message about successful login to the catalogue
+            if db_customer.email == 'skladnik@gmail.com':
+                messages.add_message(request, messages.SUCCESS,
+                                 'Boli ste úspešne prihlásený ako skladník.')
+                # load products to be shown in catalogue
+                orders = []
+                productsInOrderWhichAreReady = models.ProductsInOrder.objects.filter(status='nepripravený').values('order').distinct()
+                for productInOrderWhichIsReady in productsInOrderWhichAreReady:
+                    orderTemp = models.Order.objects.get(id=productInOrderWhichIsReady['order'])
+                    orders.append(orderTemp)    
+                paginator = Paginator(orders, 5)
+                page = request.GET.get('page')
+                orders = paginator.get_page(page)
+
+                context = {
+                    'orders' : orders,
+                }
+
+                return render(request, 'IS/orders.html', context)
+
+
+            elif db_customer.email == 'pokladnik@gmail.com':
+                messages.add_message(request, messages.SUCCESS,
+                                 'Boli ste úspešne prihlásený ako pokladník.')
+                # load products to be shown in catalogue
+                orders = []
+                productsInOrderWhichAreReady = models.ProductsInOrder.objects.filter(status='pripravený').values('order').distinct()
+                for productInOrderWhichIsReady in productsInOrderWhichAreReady:
+                    orderTemp = models.Order.objects.get(id=productInOrderWhichIsReady['order'])
+                    if orderTemp.prepared == False:
+                        orders.append(orderTemp)    
+                paginator = Paginator(orders, 5)
+                page = request.GET.get('page')
+                orders = paginator.get_page(page)
+
+                context = {
+                    'orders' : orders,
+                }
+
+                return render(request, 'IS/orders.html', context)
+            else:
                 messages.add_message(request, messages.ERROR,
                                      'Nesprávny e-mail alebo heslo.')
                 context = {
@@ -90,13 +170,19 @@ def orders(request):
                 }
                 return render(request, 'IS/login.html', context=context)
 
-            # if we got here, we have read our customer details from db
-            # and we'll send message about successful login to the catalogue
-            messages.add_message(request, messages.SUCCESS,
-                                 'Boli ste úspešne prihlásený.')
-
+    orders = []
     # load products to be shown in catalogue
-    orders = models.Order.objects.all()
+    if user.email == 'pokladnik@gmail.com':
+        productsInOrderWhichAreReady = models.ProductsInOrder.objects.filter(status='pripravený').values('order').distinct()
+        for productInOrderWhichIsReady in productsInOrderWhichAreReady:
+            orderTemp = models.Order.objects.get(id=productInOrderWhichIsReady['order'])
+            if orderTemp.prepared == False:
+                orders.append(orderTemp)
+    elif user.email == 'skladnik@gmail.com':
+        productsInOrderWhichAreReady = models.ProductsInOrder.objects.filter(status='nepripravený').values('order').distinct()
+        for productInOrderWhichIsReady in productsInOrderWhichAreReady:
+            orderTemp = models.Order.objects.get(id=productInOrderWhichIsReady['order'])
+            orders.append(orderTemp)
 
     paginator = Paginator(orders, 5)
     page = request.GET.get('page')
@@ -104,7 +190,6 @@ def orders(request):
 
     context = {
         'orders' : orders,
-        'products': models.ProductsInOrder.objects.all()
     }
 
     return render(request, 'IS/orders.html', context)
