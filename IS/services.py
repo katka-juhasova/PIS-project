@@ -46,3 +46,23 @@ class Order:
         self.total_amount = 0
         self.breakable = False
         self.prepared = False
+
+class ProductsInOrder:
+    def __init__(self, id_num: int, name: str, price: float, weight: float,
+                 breakable: bool, amount: int, available: bool, status: str, image: str,
+                 alternative_for: int or None, alternative_for_name: str or None, 
+                 alternative_for_image: str or None, alternative_for_price: float or None):
+        self.id_num = id_num
+        self.name = name
+        self.price = price
+        self.weight = weight
+        self.breakable = breakable
+        self.amount = amount
+        self.available = available
+        self.status = status
+        self.image = image
+        self.alternative_for = alternative_for
+        self.alternative_for_name = alternative_for_name
+        self.alternative_for_image = alternative_for_image
+        self.alternative_for_price = alternative_for_price
+        

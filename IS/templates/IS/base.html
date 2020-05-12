@@ -2,36 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>
-    function displaySkladnik() {
-      var checkBox = document.getElementById("skladnikCheck");
-      var checkBox2 = document.getElementById("pokladnikCheck");
-      var text = document.getElementById("skladnikText");
-      var text2 = document.getElementById("pokladnikText");
-      if (checkBox.checked == true){
-        checkBox2.checked = false
-        text.style.display = "block";
-        text2.style.display = "none";
-      } else {
-        text.style.display = "none";
-      }
-    }
-
-    function displayPokladnik() {
-      var checkBox = document.getElementById("skladnikCheck");
-      var checkBox2 = document.getElementById("pokladnikCheck");
-      var text = document.getElementById("skladnikText");
-      var text2 = document.getElementById("pokladnikText");
-      if (checkBox2.checked == true){
-        checkBox.checked = false
-        text2.style.display = "block";
-        text.style.display = "none";
-      } else {
-        text2.style.display = "none";
-      }
-    }
-  </script>
-
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport"
@@ -49,11 +19,10 @@
           integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay"
           crossorigin="anonymous">
   <link rel="stylesheet" href="{% static 'pagination.css' %}">
-
-
   <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-datetimepicker.css' %}" >
   <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
 
+  {% block style %}{% endblock %}
   {% if title %}
     <title>Online obchod - {{ title }}</title>
   {% else %}
@@ -83,7 +52,6 @@
 <div class="footer">
   <p class="mr-4">© Katarína Juhásova, Matej Glemba, Dávid Kecskés</p>
 </div>
-
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

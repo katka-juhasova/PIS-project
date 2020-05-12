@@ -1,4 +1,11 @@
 {% extends "IS/base.html" %}
+{% block style %}
+<style>
+  tr[data-href] {
+    cursor: pointer;
+  }
+</style>
+{% endblock %}
 {% block content %}
 <h1 style="text-align: center; margin-top: 2%; margin-bottom: 3%">
     Zoznam objednávok
@@ -6,29 +13,35 @@
   <table class="card shopping-cart">
     <thead class="card-header bg-dark text-light">
       <tr class="row">
-        <th class="col-12 col-sm-12 col-md-4 text-center">
+        <th class="col-12 col-sm-12 col-md-3 text-center">
           <div class="product-name"><strong>ID Objednávky</strong></div>      
         </th>
-        <th class="col-12 col-sm-12 col-md-4 text-center">
+        <th class="col-12 col-sm-12 col-md-3 text-center">
           <div class="product-name"><strong>Prevádzka</strong></div>      
         </th>
-        <th class="col-12 col-sm-12 col-md-4 text-center">
+        <th class="col-12 col-sm-12 col-md-3 text-center">
           <div class="product-name"><strong>Meno zákazníka</strong></div>      
+        </th>
+        <th class="col-12 col-sm-12 col-md-3 text-center">
+          <div class="product-name"><strong>Stav</strong></div>      
         </th>
       </tr>
     </thead>
     <tbody class="card-body">
       <!-- Orders -->
       {% for order in orders %}
-        <tr class="row">
-          <td class="col-12 col-sm-12 col-md-4 text-center">
+        <tr class="row" data-href="{% url 'order_detail' order_id=order.id %}">
+          <td class="col-12 col-sm-12 col-md-3 text-center">
             <h5 class="product-name"><strong>{{ order.id }}</strong></h5>
           </td>
-          <td class="col-12 col-sm-12 col-md-4 text-center">
-            <h5 class="product-name"><strong>{{ order.store.address.city }}</strong></h5>
+          <td class="col-12 col-sm-12 col-md-3 text-center">
+            <h5 class="product-name"><strong>{{ order.store.address.city }}, {{ order.store.address.street }}</strong></h5>
           </td>
-          <td class="col-12 col-sm-12 col-md-4 text-center">
+          <td class="col-12 col-sm-12 col-md-3 text-center">
             <h5 class="product-name"><strong>{{ order.customer.name }}</strong></h5>
+          </td>
+          <td class="col-12 col-sm-12 col-md-3 text-center">
+            <h5 class="product-name"><strong>{% if order.prepared %}Pripravená{% else %}Nepripravená{% endif %}</strong></h5>
           </td>   
         </tr>
       {% endfor%}
@@ -63,16 +76,14 @@
   {% endif %}
 </div>
 {% endif %}
-
-<!--<div class="card-footer">
-  <div class="row justify-content-center" style="margin-top: 5%">
-    <form>
-      <button class="button-light" type="submit">Upraviť náhrady</button>
-    </form>
-    <div style="width: 7%"></div>
-    <form action="/e-shop/settings/" method="get">
-      <button class="button-dark" type="submit">Pokračovať</button>
-    </form>
-  </div>
-</div>-->
 {% endblock content %}
+{% block skripts %}
+<script>
+  $(document).ready(function () {
+    $(document.body).on("click", "tr[data-href]", function () {
+      console.log("tu som")
+      window.location.href = this.dataset.href;
+    });
+  });
+</script>
+{% endblock skripts %}

@@ -2,14 +2,14 @@ from django.shortcuts import render
 from .forms import *
 import CIS.models as models
 from django.contrib import messages
-from .services import Customer, Order
+from .services import Customer, Order, ProductsInOrder
 import zeep
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 customer = None
 order = None
-
+orderId = None
 
 def home(request):
     global order
@@ -19,8 +19,46 @@ def home(request):
 def login(request):
     return render(request, 'IS/login.html')
 
-def order_detail(request):
-    return render(request, 'IS/order_detail.html')
+def order_detail(request, order_id):
+    global orderId
+    orderId = order_id
+    
+    order = models.Order.objects.get(id=order_id)
+    store = models.Store.objects.get(id=order.store_id)
+    customer = models.Customer.objects.get(id=order.customer_id)
+    products = []
+    productsFromOrder = models.ProductsInOrder.objects.filter(order=order_id)
+    
+    for product in productsFromOrder:
+        productTemp = models.Product.objects.get(id=product.product_id)
+        if product.alternative_for is not None:
+            productAlternative = models.Product.objects.get(id=product.alternative_for)
+            productListTemp = ProductsInOrder(productTemp.id, productTemp.name, productTemp.price, productTemp.weight, 
+                        productTemp.breakable, product.amount, product.available, product.status, productTemp.image,
+                        product.alternative_for, productAlternative.name, productAlternative.image, productAlternative.price)
+        else:
+            productListTemp = ProductsInOrder(productTemp.id, productTemp.name, productTemp.price, productTemp.weight, 
+                        productTemp.breakable, product.amount, product.available, product.status, productTemp.image, None, None, None, None)
+        products.append(productListTemp)
+    
+    context = {
+        'products': products,
+        'order': order,
+        'store' : store,
+        'customer': customer,
+    }
+
+    if order.courier_id is not None:
+        curier = models.Courier.objects.get(id=order.courier_id)
+        context = {
+            'products': products,
+            'order': order,
+            'store' : store,
+            'customer': customer,
+            'curier' : curier
+        }
+
+    return render(request, 'IS/order_detail.html', context)
 
 def orders(request):
     global customer

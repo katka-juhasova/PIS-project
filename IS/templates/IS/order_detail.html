@@ -1,0 +1,107 @@
+{% extends "IS/base.html" %}
+{% load static %}
+{% block content %}
+<h1 class="text-center" style="margin-top: 2%"> Objednávka {{ order.id }} </h1>
+<div class="card shopping-cart">
+    <div class="card-header bg-dark text-light">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-12 col-md-4 text-center">
+                <strong>Product</strong>
+            </div>
+            <div class="col-12 col-sm-12 col-md-4 text-center">
+                <strong>Alternatíva</strong>
+            </div>
+            <div class="col-12 col-sm-12 col-md-4 text-center">
+               <strong>Status</strong>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- PRODUCT -->
+        {% for product in products %}
+        <hr>
+        <div class="row justify-content-between">
+            <div class="col-12 col-sm-12 col-md-4 text-center">
+                <div class="row justify-content-center">
+                    <img class="img-responsive" src={% static product.image %} alt="prewiew" width="120" height="80">
+                </div>
+                <div class="row justify-content-center">
+                    {% if product.alternative_for %}
+                        <h4 class="product-name" style="text-decoration: line-through;"><strong>{{ product.name }}</strong></h4>
+                    {% else %}
+                        <h4 class="product-name"><strong>{{ product.name }}</strong></h4>
+                    {% endif %}
+                </div>
+                <div class="row justify-content-center">
+                    {% if product.alternative_for %}
+                        <h4 class="product-name" style="text-decoration: line-through;"><strong>Počet kusov: {{ product.amount }}</strong></h4>
+                    {% else %}
+                        <h4 class="product-name"><strong>Počet kusov: {{ product.amount }}</strong></h4>
+                    {% endif %}
+                </div>
+                <div class="row justify-content-center">
+                    {% if product.alternative_for %}
+                        <h4 class="product-name" style="text-decoration: line-through;"><strong>Cena za kus: {{ product.price }}€</strong></h4>
+                    {% else %}
+                        <h4 class="product-name"><strong>Cena za kus: {{ product.price }}€</strong></h4>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-4 text-center">
+                {% if product.alternative_for %}
+                    <div class="row justify-content-center">
+                        <img class="img-responsive" src={% static product.alternative_for_image %} alt="prewiew" width="120" height="80">
+                    </div>
+                    <div class="row justify-content-center">
+                        <h4 class="product-name"><strong>{{ product.alternative_for_name }} (Alternatíva)</strong></h4>
+                    </div>
+                    <div class="row justify-content-center">
+                        <h4>Počet kusov: {{ product.amount }}</h4>
+                    </div>
+                    <div class="row justify-content-center">
+                        <h4>Cena za kus: {{ product.alternative_for_price }}€</h4>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12 col-sm-12 col-md-4 text-center" style="padding-top: 70px;">
+                    <select id="status" name="status" style="font-size: larger; background-color: darkgrey;">
+                        {% if product.status == 'pripravený' %}
+                            <option value="pripraveny">{{ product.status }}</option>
+                        {% else %}
+                            <option value="nepripraveny">{{ product.status }}</option>
+                            <option value="pripraveny">pripravený</option>
+                        {% endif %}
+                    </select>
+            </div>
+        </div>
+        {% endfor %}
+        <!-- END PRODUCT --> 
+    </div>    
+    <div class="card-footer">
+      <div class="row d-flex justify-content-between">
+        {% if order.delivery_type == 'curier' %}
+          <div class="col-sm-6"> 
+            <h4 class="product-name"><strong>Kuriér: </strong>{{ curier.name }} , {% if curier.automobile and curier.bicycle %}Auto alebo bicykel{% elif curier.automobile %}Auto{% else %}Bicykel{% endif %}</h4>
+            <h6 class="product-name" style="padding-left: 15px;"><strong>Zvolený čas doručenia od </strong>{{ order.delivery_time_from }}<strong>, do </strong>{{ order.delivery_time_to }}</h6>
+            <h4 class="product-name"><strong>Prevádzka: </strong>{{ store.address.city }}, {{ store.address.street }}</h4>
+          </div>
+        {% elif order.delivery_type == 'personal collection'%}
+          <div class="col-sm-6"> 
+            <h4 class="product-name"><strong>Osobný odber</strong></h4>
+            <h4 class="product-name"><strong>Prevádzka: </strong>{{ store.address.city }}, {{ store.address.street }}</h4>
+          </div>
+        {% endif %}
+        <div class="col-sm-3 justify-content-right">
+            <div class="row">
+                <form action="/is/orders" method="post"> {% csrf_token %}
+                    <button class="button-dark" style="margin-top: 5px;" name="save order" type="submit">Potvrdiť</button>
+                </form>
+                <form action="/is/orders" method="get" style="padding-left: 3%;">
+                    <button class="button-dark" style="margin-top: 5px;" type="submit">Späť</button>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock content %}
